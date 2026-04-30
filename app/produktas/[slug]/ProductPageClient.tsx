@@ -191,6 +191,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
 
   const v = ASSET_VERSION;
   const desktopVideoSrc = `/products/${product.id}.mp4?v=${v}`;
+  const mobileVideoSrc  = `/products/${product.id}_mobile.mp4?v=${v}`;
   const posterSrc       = `/products/${product.id}_poster.jpg?v=${v}`;
 
   useEffect(() => {
@@ -209,12 +210,15 @@ export default function ProductPageClient({ product }: { product: Product }) {
         {backLink}
         <main className="w-screen bg-black">
           <div className="relative h-52 overflow-hidden">
+            {/* Static poster — always present; visible if video is blocked (Low Power Mode, etc.) */}
             <img
               src={posterSrc}
               alt=""
               aria-hidden="true"
               className="absolute inset-0 w-full h-full object-cover"
+              style={{ zIndex: 0 }}
             />
+            <SeamlessVideo src={mobileVideoSrc} poster={posterSrc} style={{ zIndex: 1 }} />
             <div
               className="absolute inset-0 pointer-events-none"
               style={{

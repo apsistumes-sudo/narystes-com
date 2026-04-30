@@ -79,14 +79,14 @@ export default function SeamlessVideo({ src, poster, className, style }: Props) 
         className={base}
         src={src}
         poster={poster}
-        autoPlay muted playsInline
+        autoPlay muted playsInline preload="auto"
         style={{ ...style, opacity: showB ? 0 : 1, transition }}
       />
       <video
         ref={videoBRef}
         className={base}
         src={src}
-        muted playsInline
+        muted playsInline preload="auto"
         style={{ ...style, opacity: showB ? 1 : 0, transition }}
       />
     </>

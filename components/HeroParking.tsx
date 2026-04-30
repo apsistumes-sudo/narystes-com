@@ -108,11 +108,9 @@ export default function HeroParking() {
           key={car.id}
           href={car.href}
           aria-label={`Pasirinkti: ${car.id}`}
-          className={`absolute block group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${carsStopped ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'}`}
+          className={`absolute block ${carsStopped ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'} focus-visible:outline-none transition-all duration-300 ease-out md:hover:[filter:drop-shadow(0_0_24px_rgba(255,255,255,0.35))_drop-shadow(0_0_48px_rgba(255,255,255,0.2))] active:scale-[0.97] active:[filter:brightness(1.15)]`}
           style={{ left: car.left, top: car.top, width: car.width, height: car.height, zIndex: 20 }}
-        >
-          <span className="absolute inset-0 ring-2 ring-white/0 group-hover:ring-white/40 active:ring-white/60 rounded-lg transition-all duration-200 group-hover:scale-[1.02]" />
-        </Link>
+        />
       ))}
 
       <LightningText active={carsStopped} text="Rinkitės narystę" mobile={isMobile} />

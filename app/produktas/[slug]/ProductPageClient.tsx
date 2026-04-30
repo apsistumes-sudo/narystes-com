@@ -28,99 +28,49 @@ export default function ProductPageClient({ product }: { product: Product }) {
   const v = ASSET_VERSION;
 
   return (
-    <main
-      className="relative w-screen h-[100dvh] overflow-hidden"
-      style={{
-        backgroundImage: `url(/parking_clean.jpg?v=${v})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      {/* Stronger dark gradient — covers more of the parking artifacts */}
+    <main className="relative w-screen h-[100dvh] overflow-hidden bg-black">
+      {/* Full-bleed car photo as background */}
+      <div
+        className="absolute inset-0 bg-cover"
+        style={{
+          backgroundImage: `url(/cars/${product.id}.jpg?v=${v})`,
+          backgroundPosition: isMobile ? 'center 40%' : 'right center',
+          zIndex: 0,
+        }}
+      />
+
+      {/* Gradient overlay for text readability */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: isMobile
-            ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 25%, rgba(0,0,0,0.3) 55%, transparent 75%)'
-            : 'linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 30%, transparent 55%)',
+            ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 25%, rgba(0,0,0,0.2) 55%, transparent 75%)'
+            : 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.1) 60%, transparent 75%)',
           zIndex: 1,
         }}
       />
 
-      {/* Ground shadow — positioned in absolute screen coords, where the car wheels will be */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          ...(isMobile
-            ? {
-                bottom: '32vh',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '70vw',
-                height: '4vh',
-              }
-            : {
-                bottom: '12vh',
-                left: '20vw',
-                width: '35vw',
-                height: '5vh',
-              }),
-          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 40%, transparent 75%)',
-          filter: 'blur(12px)',
-          zIndex: 2,
-        }}
-      />
-
-      {/* The car PNG — sized so the FULL car (including wheels) fits in viewport */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={`/cars/${product.id}.png?v=${v}`}
-        alt={product.name}
-        className="absolute pointer-events-none select-none"
-        style={{
-          ...(isMobile
-            ? {
-                top: '15vh',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: 'auto',
-                height: '40vh',
-                maxWidth: '90vw',
-              }
-            : {
-                top: '15vh',
-                left: '5vw',
-                width: 'auto',
-                height: '60vh',
-                maxWidth: '50vw',
-              }),
-          objectFit: 'contain',
-          zIndex: 3,
-        }}
-        draggable={false}
-      />
-
-      {/* Product info text */}
+      {/* Product info — left side on desktop, bottom on mobile */}
       <div
         className={`
           absolute z-10
           ${isMobile
             ? 'bottom-0 left-0 right-0 p-6 pb-12'
-            : 'top-1/2 right-12 -translate-y-1/2 max-w-md p-8'}
+            : 'top-1/2 left-12 -translate-y-1/2 max-w-md p-8'}
         `}
       >
-        <div className="text-xs uppercase tracking-[0.3em] text-white/60 mb-3">
+        <div className="text-xs uppercase tracking-[0.3em] text-white/70 mb-3">
           {product.subtitle}
         </div>
         <h1 className={`font-bold text-white tracking-tight mb-4 ${isMobile ? 'text-3xl' : 'text-5xl'}`}>
           {product.name}
         </h1>
         <div className="text-2xl text-white/90 font-light mb-6">{product.price}</div>
-        <p className="text-white/80 leading-relaxed mb-6">{product.description}</p>
+        <p className="text-white/85 leading-relaxed mb-6">{product.description}</p>
         <ul className="space-y-2 mb-8">
           {product.features.map((f, i) => (
-            <li key={i} className="flex items-start gap-3 text-white/80">
-              <span className="text-white/50 mt-1">→</span>
+            <li key={i} className="flex items-start gap-3 text-white/90">
+              <span className="text-white/60 mt-1">→</span>
               <span>{f}</span>
             </li>
           ))}
@@ -137,7 +87,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
 
       <Link
         href="/"
-        className="absolute top-6 left-6 z-20 text-white/80 hover:text-white text-sm flex items-center gap-2 transition-colors bg-black/40 backdrop-blur-sm px-4 py-2 rounded-full"
+        className="absolute top-6 left-6 z-20 text-white/90 hover:text-white text-sm flex items-center gap-2 transition-colors bg-black/50 backdrop-blur-sm px-4 py-2 rounded-full"
       >
         ← Atgal
       </Link>

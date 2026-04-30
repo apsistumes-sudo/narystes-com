@@ -38,19 +38,36 @@ export default function HeroParking() {
     const el = videoRef.current;
     if (!el) return;
 
-    // Desktop approach ends ~1.67s (3s / 1.8x). Mobile approach ends ~1.04s (2.5s / 2.4x).
-    // Fire just before approach ends so flash overlaps the final stopping motion.
-    const STOP_TIME = isMobile ? 1.0 : 1.6;
+    // Trigger relative to actual video duration so encoding differences don't cause drift.
+    // Mobile uses a shorter lead because the 2.4x approach ends very close to the video's end.
+    const FLASH_LEAD_MS = isMobile ? 200 : 800;
 
-    const onTime  = () => { if (el.currentTime >= STOP_TIME && !carsStopped) setCarsStopped(true); };
-    const onEnded = () => setCarsStopped(true);
+    let triggered = false;
+
+    const onTime = () => {
+      if (triggered) return;
+      if (!el.duration || isNaN(el.duration)) return;
+      const remaining = (el.duration - el.currentTime) * 1000;
+      if (remaining <= FLASH_LEAD_MS) {
+        triggered = true;
+        setCarsStopped(true);
+      }
+    };
+
+    const onEnded = () => {
+      if (!triggered) {
+        triggered = true;
+        setCarsStopped(true);
+      }
+    };
+
     el.addEventListener('timeupdate', onTime);
     el.addEventListener('ended', onEnded);
     return () => {
       el.removeEventListener('timeupdate', onTime);
       el.removeEventListener('ended', onEnded);
     };
-  }, [carsStopped, isMobile]);
+  }, [isMobile]);
 
   const cars      = isMobile ? CARS_MOBILE : CARS_DESKTOP;
   const videoSrc  = isMobile ? `/web_hero_mobile.mp4?v=${v}`        : `/web_hero.mp4?v=${v}`;

@@ -69,7 +69,7 @@ export default function LightningText({
         style={{ zIndex: 30 }}
       />
       <div
-        className={`pointer-events-none absolute inset-x-0 flex justify-center px-4 transition-all duration-500 ease-out ${mobile ? 'top-[10%]' : 'top-[14%]'} ${showText ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.92]'}`}
+        className={`pointer-events-none absolute inset-x-0 flex justify-center px-4 transition-all duration-500 ease-out ${mobile ? 'top-[16%]' : 'top-[14%]'} ${showText ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.92]'}`}
         style={{ zIndex: 25 }}
       >
         <h1

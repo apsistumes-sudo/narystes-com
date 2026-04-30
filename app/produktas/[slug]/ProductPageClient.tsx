@@ -202,6 +202,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
   }, [isMobile, desktopVideoSrc]);
 
   const hasVideos = (product.youtubeVideos?.length ?? 0) > 0;
+  const MOBILE_HERO_START_OFFSET = 0.5; // seconds — skip bad initial frames on mobile hero
 
   // ── MOBILE (<768px) ─────────────────────────────────────────────────────────
   if (isMobile) {
@@ -216,9 +217,14 @@ export default function ProductPageClient({ product }: { product: Product }) {
               alt=""
               aria-hidden="true"
               className="absolute inset-0 w-full h-full object-cover"
-              style={{ zIndex: 0 }}
+              style={{ zIndex: 0, ...(product.id === 'aventador' && { objectPosition: 'center 75%' }) }}
             />
-            <SeamlessVideo src={mobileVideoSrc} poster={posterSrc} style={{ zIndex: 1 }} />
+            <SeamlessVideo
+              src={mobileVideoSrc}
+              poster={posterSrc}
+              startOffset={MOBILE_HERO_START_OFFSET}
+              style={{ zIndex: 1, ...(product.id === 'aventador' && { objectPosition: 'center 75%' }) }}
+            />
             <div
               className="absolute inset-0 pointer-events-none"
               style={{

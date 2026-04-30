@@ -6,6 +6,7 @@ type Props = {
   poster?: string;
   className?: string;
   style?: React.CSSProperties;
+  startOffset?: number;
 };
 
 // Seconds before end of active video to start the crossfade.
@@ -17,7 +18,7 @@ const FADE_S = 0.6;
  * video is rewound to 0, played, and faded in while the active
  * video fades out. No loop attribute — no browser-level hard cut.
  */
-export default function SeamlessVideo({ src, poster, className, style }: Props) {
+export default function SeamlessVideo({ src, poster, className, style, startOffset = 0 }: Props) {
   const videoARef = useRef<HTMLVideoElement>(null);
   const videoBRef = useRef<HTMLVideoElement>(null);
   const [showB, setShowB] = useState(false);
@@ -32,6 +33,16 @@ export default function SeamlessVideo({ src, poster, className, style }: Props) 
     let rafId: number;
     let swapping = false;
 
+    const onMetaA = () => { if (a.currentTime < startOffset) a.currentTime = startOffset; };
+    const onMetaB = () => { if (b.currentTime < startOffset) b.currentTime = startOffset; };
+    const onTimeA = () => { if (a.currentTime < startOffset) a.currentTime = startOffset; };
+    const onTimeB = () => { if (b.currentTime < startOffset) b.currentTime = startOffset; };
+
+    a.addEventListener('loadedmetadata', onMetaA);
+    b.addEventListener('loadedmetadata', onMetaB);
+    a.addEventListener('timeupdate', onTimeA);
+    b.addEventListener('timeupdate', onTimeB);
+
     const swap = (activeIsA: boolean) => {
       if (swapping) return;
       swapping = true;
@@ -39,19 +50,16 @@ export default function SeamlessVideo({ src, poster, className, style }: Props) 
       const incoming = activeIsA ? b : a;
       const outgoing = activeIsA ? a : b;
 
-      // Rewind the idle video and start it.
-      incoming.currentTime = 0;
+      incoming.currentTime = startOffset;
       incoming.play().catch(() => {});
 
-      // Flip the opacity state.
       const next = !showBRef.current;
       showBRef.current = next;
       setShowB(next);
 
-      // After the crossfade + a small buffer, park the outgoing video.
       setTimeout(() => {
         outgoing.pause();
-        outgoing.currentTime = 0;
+        outgoing.currentTime = startOffset;
         swapping = false;
       }, FADE_S * 1000 + 150);
     };
@@ -66,8 +74,15 @@ export default function SeamlessVideo({ src, poster, className, style }: Props) 
     };
 
     rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, [src]);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      a.removeEventListener('loadedmetadata', onMetaA);
+      b.removeEventListener('loadedmetadata', onMetaB);
+      a.removeEventListener('timeupdate', onTimeA);
+      b.removeEventListener('timeupdate', onTimeB);
+    };
+  }, [src, startOffset]);
 
   const base = className ?? 'absolute inset-0 w-full h-full object-cover';
   const transition = `opacity ${FADE_S * 1000}ms ease-in-out`;

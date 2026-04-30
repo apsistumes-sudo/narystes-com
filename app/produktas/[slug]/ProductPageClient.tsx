@@ -24,6 +24,8 @@ type Product = {
   subtitle: string;
   price: string;
   tagline: string;
+  heroHeadline?: string;
+  susisiektiUrl: string;
   sections: readonly ProductSection[];
   youtubeVideos?: readonly YoutubeVideo[];
   ctaLabel: string;
@@ -38,14 +40,14 @@ type Product = {
 function SectionBlock({ section }: { section: ProductSection }) {
   return (
     <div className="mb-6">
-      <h2 className="text-white font-semibold text-lg mb-3">{section.heading}</h2>
+      <h2 className="text-white font-semibold text-lg lg:text-2xl mb-3">{section.heading}</h2>
       {section.intro && (
         <p className="text-white/80 leading-relaxed mb-3">{section.intro}</p>
       )}
       {section.numberedList && (
         <ol className="space-y-2 mb-3">
           {section.numberedList.map((item, i) => (
-            <li key={i} className="flex gap-3 text-white/85 leading-relaxed">
+            <li key={i} className="flex gap-3 text-white/85 leading-relaxed lg:text-lg">
               <span className="text-white/50 font-mono shrink-0">{i + 1}.</span>
               <span>{item}</span>
             </li>
@@ -55,7 +57,7 @@ function SectionBlock({ section }: { section: ProductSection }) {
       {section.bulletList && (
         <ul className="space-y-2 mb-3">
           {section.bulletList.map((item, i) => (
-            <li key={i} className="flex items-start gap-3 text-white/85 leading-relaxed">
+            <li key={i} className="flex items-start gap-3 text-white/85 leading-relaxed lg:text-lg">
               <span className="text-white/50 mt-1 shrink-0">→</span>
               <span>{item}</span>
             </li>
@@ -304,14 +306,14 @@ export default function ProductPageClient({ product }: { product: Product }) {
 
         {/* Centered two-column overlay */}
         <div className="absolute inset-0 z-10 flex items-center justify-center">
-          <div className="w-full max-w-[1280px] mx-auto px-10 flex items-start gap-14">
+          <div className="w-full max-w-[1280px] mx-auto px-10 flex items-center gap-14">
 
             {/* LEFT — "Pamatyk mus veikiant" + vertical video list */}
             <div className="flex-1 flex flex-col max-h-[84dvh] overflow-y-auto py-14">
               {hasVideos && product.youtubeVideos ? (
                 <>
-                  <h2 className="text-white font-bold text-2xl mb-2">Pamatyk mus veikiant</h2>
-                  <p className="text-white/55 text-sm mb-6">
+                  <h2 className="text-white font-bold text-2xl lg:text-3xl mb-2">Pamatyk mus veikiant</h2>
+                  <p className="text-white/55 text-sm lg:text-base mb-6">
                     Keletas mūsų pasirodymų ir interviu YouTube:
                   </p>
                   <YoutubeListDesktop videos={product.youtubeVideos} />
@@ -321,39 +323,26 @@ export default function ProductPageClient({ product }: { product: Product }) {
               )}
             </div>
 
-            {/* RIGHT — membership info + CTAs */}
+            {/* RIGHT — membership info + CTA */}
             <div className="flex-1 flex flex-col max-h-[84dvh] overflow-y-auto py-14">
-              <div className="text-xs uppercase tracking-[0.3em] text-white/70 mb-3">
-                {product.subtitle}
-              </div>
-              <h1 className="font-bold text-white tracking-tight text-5xl mb-3">
-                {product.name}
-              </h1>
-              <div className="text-2xl text-white/90 font-light mb-2">{product.price}</div>
-              <p className="text-white/70 text-sm mb-7 leading-relaxed">{product.tagline}</p>
+              {product.heroHeadline && (
+                <h1 className="font-bold text-white leading-tight text-4xl lg:text-5xl mb-6">
+                  {product.heroHeadline}
+                </h1>
+              )}
 
               {product.sections.map((section, idx) => (
                 <SectionBlock key={idx} section={section} />
               ))}
 
-              <div className="flex items-center gap-4 mt-2">
-                <a
-                  href={product.ctaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block text-center bg-white text-black font-semibold px-7 py-4 rounded-full hover:bg-white/90 active:scale-[0.97] transition-all"
-                >
-                  {product.ctaLabel}
-                </a>
-                <a
-                  href={product.secondaryCtaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block text-center bg-white/10 hover:bg-white/15 text-white font-semibold px-7 py-4 rounded-full backdrop-blur-sm border border-white/20 active:scale-[0.97] transition-all"
-                >
-                  {product.secondaryCtaLabel}
-                </a>
-              </div>
+              <a
+                href={product.susisiektiUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-glow inline-block text-center bg-white text-black font-semibold text-lg px-10 py-3.5 rounded-full hover:bg-white/90 active:scale-[0.97] transition-all mt-8 self-start"
+              >
+                Susisiekti
+              </a>
             </div>
 
           </div>

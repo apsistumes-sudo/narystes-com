@@ -37,3 +37,11 @@ body {
   background: var(--accent);
   color: #fff;
 }
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px 2px rgba(255,255,255,0.10), 0 0 24px 8px rgba(255,255,255,0.05); }
+  50%       { box-shadow: 0 0 18px 5px rgba(255,255,255,0.25), 0 0 48px 16px rgba(255,255,255,0.10); }
+}
+.btn-glow {
+  animation: glow-pulse 2.8s ease-in-out infinite;
+}

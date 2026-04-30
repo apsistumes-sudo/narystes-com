@@ -21,6 +21,8 @@ type Product = {
   subtitle: string;
   price: string;
   tagline: string;
+  heroHeadline?: string;
+  susisiektiUrl: string;
   sections: ProductSection[];
   youtubeVideos?: YoutubeVideo[];
   ctaLabel: string;
@@ -45,6 +47,8 @@ const PRODUCTS: Record<string, Product> = {
     subtitle: 'Bendruomenės narystė',
     price: '19€/mėn',
     tagline: 'Lietuvos didžiausia kripto bendruomenė.',
+    heroHeadline: 'Didžiausia bendruomenė, virš 100 tūkstančių sekėjų per visas platformas sudėjus',
+    susisiektiUrl: 'https://www.instagram.com/crypto_lietuva/',
     sections: [
       {
         heading: 'Kodėl mumis pasitiki?',
@@ -69,6 +73,7 @@ const PRODUCTS: Record<string, Product> = {
     subtitle: 'Premium narystė',
     price: '49€/mėn',
     tagline: 'Profesionalus kripto pozicijų skaneris.',
+    susisiektiUrl: 'https://www.launchpass.com/skenuoklt/skenuok-lt',
     sections: [
       {
         heading: 'Kaip veikia produktas?',
@@ -102,6 +107,7 @@ const PRODUCTS: Record<string, Product> = {
     subtitle: 'Prekybos indikatorius',
     price: '29€/mėn',
     tagline: 'Profesionalus indikatorius pozicijų atpažinimui.',
+    susisiektiUrl: 'https://www.instagram.com/indikatorius_com/',
     sections: [
       {
         heading: 'Kas yra Indikatorius?',

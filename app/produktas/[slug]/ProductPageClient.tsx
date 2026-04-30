@@ -190,9 +190,10 @@ export default function ProductPageClient({ product }: { product: Product }) {
   }, []);
 
   const v = ASSET_VERSION;
-  const desktopVideoSrc = `/products/${product.id}.mp4?v=${v}`;
-  const mobileVideoSrc  = `/products/${product.id}_mobile.mp4?v=${v}`;
-  const posterSrc       = `/products/${product.id}_poster.jpg?v=${v}`;
+  const desktopVideoSrc  = `/products/${product.id}.mp4?v=${v}`;
+  const mobileVideoSrc   = `/products/${product.id}_mobile.mp4?v=${v}`;
+  const posterSrc        = `/products/${product.id}_poster.jpg?v=${v}`;
+  const mobilePosterSrc  = `/products/${product.id}_mobile_poster.jpg?v=${v}`;
 
   useEffect(() => {
     if (isMobile) return;
@@ -213,7 +214,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
           <div className="relative h-52 overflow-hidden">
             {/* Static poster — always present; visible if video is blocked (Low Power Mode, etc.) */}
             <img
-              src={posterSrc}
+              src={mobilePosterSrc}
               alt=""
               aria-hidden="true"
               className="absolute inset-0 w-full h-full object-cover"
@@ -221,7 +222,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
             />
             <SeamlessVideo
               src={mobileVideoSrc}
-              poster={posterSrc}
+              poster={mobilePosterSrc}
               startOffset={MOBILE_HERO_START_OFFSET}
               style={{ zIndex: 1, ...(product.id === 'aventador' && { objectPosition: 'center 75%' }) }}
             />

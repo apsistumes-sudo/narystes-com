@@ -21,24 +21,6 @@ const CARS_MOBILE = [
   { id: 'aventador', href: '/produktas/aventador', left: '68%', top: '60%', width: '30%', height: '22%' },
 ];
 
-// Plate overlay positions — tweak top/left after calibrating on real video.
-// width = container width; the image inside is cropped to just the plate rectangle.
-// The PNG images are square (2048×2048) with a ~3.5:1 plate centered inside with white margins.
-// Crop ratios below remove the white margins: ~32% top/bottom, ~7% left/right.
-const PLATE_CROP = { top: '32%', bottom: '32%', left: '7%', right: '7%' };
-
-const PLATES_DESKTOP = [
-  { id: 'divo',      left: '7%',  top: '71%', width: '24%' },
-  { id: 'urus',      left: '38%', top: '65%', width: '24%' },
-  { id: 'aventador', left: '69%', top: '71%', width: '24%' },
-];
-
-const PLATES_MOBILE = [
-  { id: 'divo',      left: '2%',  top: '75%', width: '30%' },
-  { id: 'urus',      left: '32%', top: '70%', width: '36%' },
-  { id: 'aventador', left: '68%', top: '75%', width: '30%' },
-];
-
 export default function HeroParking() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [carsStopped, setCarsStopped] = useState(false);
@@ -72,8 +54,7 @@ export default function HeroParking() {
     };
   }, [carsStopped]);
 
-  const cars   = isMobile ? CARS_MOBILE   : CARS_DESKTOP;
-  const plates = isMobile ? PLATES_MOBILE : PLATES_DESKTOP;
+  const cars      = isMobile ? CARS_MOBILE : CARS_DESKTOP;
   const videoSrc  = isMobile ? `/web_hero_mobile.mp4?v=${v}`        : `/web_hero.mp4?v=${v}`;
   const posterSrc = isMobile ? `/web_hero_mobile_poster.jpg?v=${v}` : `/web_hero_poster.jpg?v=${v}`;
 
@@ -103,44 +84,6 @@ export default function HeroParking() {
 
       <RainOverlay active={carsStopped} />
 
-      {/* Crisp license plate overlays — fade in with the static frame */}
-      {plates.map(plate => (
-        <div
-          key={plate.id}
-          className={`absolute pointer-events-none transition-opacity duration-500 ${carsStopped ? 'opacity-100' : 'opacity-0'}`}
-          style={{
-            left: plate.left,
-            top: plate.top,
-            width: plate.width,
-            // Crop container sized to the visible plate rectangle inside the square PNG
-            overflow: 'hidden',
-            aspectRatio: '1 / 1',
-            zIndex: 22,
-            // Negative margin crops: shift image so the plate rectangle fills the container
-            // Adjust PLATE_CROP values if white edges are visible
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`/plates/plate-${plate.id}.png?v=${v}`}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            style={{
-              position: 'absolute',
-              top:    `-${PLATE_CROP.top}`,
-              bottom: `-${PLATE_CROP.bottom}`,
-              left:   `-${PLATE_CROP.left}`,
-              right:  `-${PLATE_CROP.right}`,
-              width:  `calc(100% + ${PLATE_CROP.left} + ${PLATE_CROP.right})`,
-              height: `calc(100% + ${PLATE_CROP.top}  + ${PLATE_CROP.bottom})`,
-              objectFit: 'contain',
-              filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.85))',
-            }}
-          />
-        </div>
-      ))}
-
       {cars.map(car => (
         <Link
           key={car.id}
@@ -154,6 +97,7 @@ export default function HeroParking() {
       ))}
 
       <LightningText active={carsStopped} text="Rinkitės narystę" mobile={isMobile} />
+
     </section>
   );
 }

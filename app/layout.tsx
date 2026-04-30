@@ -15,7 +15,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Narystes.com",
+  title: "Narystes",
   description: "Išskirtiniai produktai. Ribotas prieinamumas.",
 };
 

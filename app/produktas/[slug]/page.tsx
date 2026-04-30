@@ -150,7 +150,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const p = PRODUCTS[slug];
   if (!p) return {};
-  return { title: `${p.name} — Narystes.com` };
+  return { title: `${p.name} — Narystes` };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {

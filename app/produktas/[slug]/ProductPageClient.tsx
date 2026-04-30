@@ -85,7 +85,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
         }}
       />
 
-      <RainOverlay />
+      <RainOverlay posterUrl={`/parking_clean.jpg?v=${ASSET_VERSION}`} />
 
       {/* Product info */}
       <div

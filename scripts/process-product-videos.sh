@@ -3,36 +3,70 @@ set -euo pipefail
 
 mkdir -p public/products
 
-# Bugatti — clean already, just transcode for web (mobile 9:16)
-ffmpeg -y -i bugatis_2page.mp4 \
-  -c:v libx264 -preset slow -crf 21 -maxrate 5M -bufsize 10M \
-  -an -movflags +faststart \
-  -vf "scale=1080:1920:flags=lanczos" \
-  public/products/divo_mobile.mp4
+# === MOBILE versions (vertical 9:16) ===
 
-# Urus — clean already, just transcode for web (mobile 9:16)
-ffmpeg -y -i urus_2page.mp4 \
-  -c:v libx264 -preset slow -crf 21 -maxrate 5M -bufsize 10M \
-  -an -movflags +faststart \
-  -vf "scale=1080:1920:flags=lanczos" \
-  public/products/urus_mobile.mp4
+if [ -f bugatis_2page.mp4 ]; then
+  ffmpeg -y -i bugatis_2page.mp4 \
+    -c:v libx264 -preset slow -crf 21 -maxrate 5M -bufsize 10M \
+    -an -movflags +faststart \
+    -vf "scale=1080:1920:flags=lanczos" \
+    public/products/divo_mobile.mp4
+fi
 
-# Aventador — crop left ~12% to remove Urus fragment, then re-pad to 1080x1920 (mobile 9:16)
-ffmpeg -y -i lambo_2page.mp4 \
-  -vf "crop=950:1920:130:0,scale=1080:1920:flags=lanczos" \
-  -c:v libx264 -preset slow -crf 21 -maxrate 5M -bufsize 10M \
-  -an -movflags +faststart \
-  public/products/aventador_mobile.mp4
+if [ -f urus_2page.mp4 ]; then
+  ffmpeg -y -i urus_2page.mp4 \
+    -c:v libx264 -preset slow -crf 21 -maxrate 5M -bufsize 10M \
+    -an -movflags +faststart \
+    -vf "scale=1080:1920:flags=lanczos" \
+    public/products/urus_mobile.mp4
+fi
 
-# When 16:9 desktop source videos are available, add them here as:
-#   public/products/divo.mp4
-#   public/products/urus.mp4
-#   public/products/aventador.mp4
+if [ -f lambo_2page.mp4 ]; then
+  ffmpeg -y -i lambo_2page.mp4 \
+    -vf "crop=950:1920:130:0,scale=1080:1920:flags=lanczos" \
+    -c:v libx264 -preset slow -crf 21 -maxrate 5M -bufsize 10M \
+    -an -movflags +faststart \
+    public/products/aventador_mobile.mp4
+fi
 
-# Generate poster JPG (last frame) for each — used as <video poster=...> fallback
+# === DESKTOP versions (horizontal 16:9) ===
+
+# Bugatti desktop — zoom in 1.66x (car was too small in original)
+if [ -f bugati_web.mp4 ]; then
+  ffmpeg -y -i bugati_web.mp4 \
+    -vf "crop=1152:648:384:216,scale=1920:1080:flags=lanczos" \
+    -c:v libx264 -preset slow -crf 20 -maxrate 6M -bufsize 12M \
+    -an -movflags +faststart \
+    public/products/divo.mp4
+fi
+
+# Urus desktop — no crop needed
+if [ -f urus_web.mp4 ]; then
+  ffmpeg -y -i urus_web.mp4 \
+    -vf "scale=1920:1080:flags=lanczos" \
+    -c:v libx264 -preset slow -crf 20 -maxrate 6M -bufsize 12M \
+    -an -movflags +faststart \
+    public/products/urus.mp4
+fi
+
+# Aventador desktop — no crop needed
+if [ -f lambo_web.mp4 ]; then
+  ffmpeg -y -i lambo_web.mp4 \
+    -vf "scale=1920:1080:flags=lanczos" \
+    -c:v libx264 -preset slow -crf 20 -maxrate 6M -bufsize 12M \
+    -an -movflags +faststart \
+    public/products/aventador.mp4
+fi
+
+# === POSTERS (last frame of each desktop video) ===
+
 for slug in divo urus aventador; do
-  ffmpeg -y -sseof -0.1 -i "public/products/${slug}_mobile.mp4" \
-    -vframes 1 -q:v 2 "public/products/${slug}_poster.jpg"
+  if [ -f "public/products/${slug}.mp4" ]; then
+    ffmpeg -y -sseof -0.1 -i "public/products/${slug}.mp4" \
+      -vframes 1 -q:v 2 "public/products/${slug}_poster.jpg"
+  fi
 done
 
+echo ""
+echo "=== Generated files ==="
 ls -lh public/products/

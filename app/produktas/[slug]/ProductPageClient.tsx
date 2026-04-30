@@ -69,21 +69,24 @@ function SectionBlock({ section }: { section: ProductSection }) {
   );
 }
 
-// Desktop: compact horizontal rows — thumbnail left, title right.
-// Fits 4 items in a single viewport height without scrolling.
+// Desktop: vertical list — 160×90 thumbnail on the left, title text on the right.
+// All 4 items fit within a normal viewport height without scrolling.
 function YoutubeListDesktop({ videos }: { videos: readonly YoutubeVideo[] }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {videos.map((video, i) => (
         <a
           key={i}
           href={video.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex gap-3 items-center rounded-lg p-2 hover:bg-white/8 transition-colors"
+          className="group flex items-center gap-4 rounded-xl p-2 hover:bg-white/8 transition-colors"
         >
-          {/* Thumbnail */}
-          <div className="relative flex-shrink-0 w-32 rounded overflow-hidden" style={{ aspectRatio: '16/9' }}>
+          {/* 160×90 thumbnail */}
+          <div
+            className="relative flex-shrink-0 w-40 rounded-lg overflow-hidden"
+            style={{ aspectRatio: '16/9' }}
+          >
             <img
               src={`https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`}
               alt={video.title || 'YouTube video'}
@@ -91,8 +94,8 @@ function YoutubeListDesktop({ videos }: { videos: readonly YoutubeVideo[] }) {
               loading="lazy"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors">
-              <div className="w-7 h-7 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg className="w-3 h-3 ml-0.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <svg className="w-3.5 h-3.5 ml-0.5 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
@@ -100,7 +103,7 @@ function YoutubeListDesktop({ videos }: { videos: readonly YoutubeVideo[] }) {
           </div>
           {/* Title */}
           <p
-            className="text-white/85 text-sm leading-snug"
+            className="text-white/90 text-sm leading-snug"
             style={{
               display: '-webkit-box',
               WebkitLineClamp: 3,
@@ -116,7 +119,7 @@ function YoutubeListDesktop({ videos }: { videos: readonly YoutubeVideo[] }) {
   );
 }
 
-// Mobile/tablet: 2×2 grid — always grid-cols-2, never single-column.
+// Mobile/tablet: always 2×2 grid, never stacks to single column.
 function YoutubeGridMobile({ videos }: { videos: readonly YoutubeVideo[] }) {
   return (
     <div className="grid grid-cols-2 gap-2">
@@ -199,13 +202,11 @@ export default function ProductPageClient({ product }: { product: Product }) {
   const hasVideos = (product.youtubeVideos?.length ?? 0) > 0;
 
   // ── MOBILE (<768px) ─────────────────────────────────────────────────────────
-  // Compact hero → text content → 2×2 YouTube grid → CTAs
   if (isMobile) {
     return (
       <>
         {backLink}
         <main className="w-screen bg-black">
-          {/* Compact car hero */}
           <div className="relative h-52 overflow-hidden">
             <SeamlessVideo src={mobileVideoSrc} poster={posterSrc} style={{ zIndex: 0 }} />
             <div
@@ -217,7 +218,6 @@ export default function ProductPageClient({ product }: { product: Product }) {
             />
           </div>
 
-          {/* Membership info */}
           <div className="px-6 pt-6 pb-2">
             <div className="text-xs uppercase tracking-[0.3em] text-white/70 mb-3">
               {product.subtitle}
@@ -232,7 +232,6 @@ export default function ProductPageClient({ product }: { product: Product }) {
             ))}
           </div>
 
-          {/* "Pamatyk mus veikiant" + 2×2 YouTube grid */}
           {hasVideos && product.youtubeVideos && (
             <div className="px-6 pb-4">
               <h2 className="text-white font-semibold text-lg mb-1">Pamatyk mus veikiant</h2>
@@ -241,7 +240,6 @@ export default function ProductPageClient({ product }: { product: Product }) {
             </div>
           )}
 
-          {/* CTAs */}
           <div className="px-6 pb-12 flex flex-col gap-3">
             <a
               href={product.ctaUrl}
@@ -266,14 +264,13 @@ export default function ProductPageClient({ product }: { product: Product }) {
   }
 
   // ── DESKTOP (≥768px) ────────────────────────────────────────────────────────
-  // Full-bleed car video. Gradient darkens both edges, leaving car visible in center.
-  // LEFT panel: "Pamatyk mus veikiant" + vertical video list.
-  // RIGHT panel: membership info + CTAs.
+  // Full-bleed car video. Centered max-w-7xl container. Balanced 50/50 columns.
+  // LEFT: vertical YouTube list. RIGHT: membership info + CTAs.
   return (
     <>
       {backLink}
       <main className="relative w-screen h-[100dvh] overflow-hidden bg-black">
-        {/* Car video — full bleed background */}
+        {/* Car video — full bleed */}
         {desktopVideoExists ? (
           <SeamlessVideo src={desktopVideoSrc} poster={posterSrc} style={{ zIndex: 0 }} />
         ) : (
@@ -288,56 +285,70 @@ export default function ProductPageClient({ product }: { product: Product }) {
           />
         )}
 
-        {/* Gradient: dark on both edges, lighter in the middle to reveal the car */}
+        {/* Gradient: dark on both screen edges, readable over columns, lighter in center */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(to right, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.18) 36%, rgba(0,0,0,0.18) 64%, rgba(0,0,0,0.93) 100%)',
+            background: 'linear-gradient(to right, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.62) 22%, rgba(0,0,0,0.28) 50%, rgba(0,0,0,0.62) 78%, rgba(0,0,0,0.85) 100%)',
             zIndex: 2,
           }}
         />
 
-        {/* LEFT panel — "Pamatyk mus veikiant" + vertical video list */}
-        {hasVideos && product.youtubeVideos && (
-          <div className="absolute z-10 top-0 left-0 h-full w-[min(380px,32vw)] px-8 py-14 flex flex-col justify-center overflow-y-auto">
-            <h2 className="text-white font-semibold text-xl mb-1">Pamatyk mus veikiant</h2>
-            <p className="text-white/60 text-sm mb-5">Keletas mūsų pasirodymų ir interviu YouTube:</p>
-            <YoutubeListDesktop videos={product.youtubeVideos} />
-          </div>
-        )}
+        {/* Centered two-column overlay */}
+        <div className="absolute inset-0 z-10 overflow-hidden">
+          <div className="h-full max-w-7xl mx-auto px-8 lg:px-14 grid grid-cols-2 gap-14">
 
-        {/* RIGHT panel — membership info + CTAs */}
-        <div className="absolute z-10 top-0 right-0 h-full w-[min(500px,40vw)] px-10 py-14 flex flex-col justify-center overflow-y-auto">
-          <div className="text-xs uppercase tracking-[0.3em] text-white/70 mb-3">
-            {product.subtitle}
-          </div>
-          <h1 className="font-bold text-white tracking-tight text-5xl mb-3">
-            {product.name}
-          </h1>
-          <div className="text-2xl text-white/90 font-light mb-2">{product.price}</div>
-          <p className="text-white/70 text-sm mb-7 leading-relaxed">{product.tagline}</p>
+            {/* LEFT — "Pamatyk mus veikiant" + vertical video list */}
+            <div className="flex flex-col justify-center py-14 overflow-y-auto">
+              {hasVideos && product.youtubeVideos ? (
+                <>
+                  <h2 className="text-white font-bold text-2xl mb-2">Pamatyk mus veikiant</h2>
+                  <p className="text-white/55 text-sm mb-6">
+                    Keletas mūsų pasirodymų ir interviu YouTube:
+                  </p>
+                  <YoutubeListDesktop videos={product.youtubeVideos} />
+                </>
+              ) : (
+                /* No videos: left column stays empty (car video visible through) */
+                <div />
+              )}
+            </div>
 
-          {product.sections.map((section, idx) => (
-            <SectionBlock key={idx} section={section} />
-          ))}
+            {/* RIGHT — membership info + CTAs */}
+            <div className="flex flex-col justify-center py-14 overflow-y-auto">
+              <div className="text-xs uppercase tracking-[0.3em] text-white/70 mb-3">
+                {product.subtitle}
+              </div>
+              <h1 className="font-bold text-white tracking-tight text-5xl mb-3">
+                {product.name}
+              </h1>
+              <div className="text-2xl text-white/90 font-light mb-2">{product.price}</div>
+              <p className="text-white/70 text-sm mb-7 leading-relaxed">{product.tagline}</p>
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-2">
-            <a
-              href={product.ctaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-center bg-white text-black font-semibold px-7 py-4 rounded-full hover:bg-white/90 active:scale-[0.97] transition-all"
-            >
-              {product.ctaLabel}
-            </a>
-            <a
-              href={product.secondaryCtaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-center bg-white/10 hover:bg-white/15 text-white font-semibold px-7 py-4 rounded-full backdrop-blur-sm border border-white/20 active:scale-[0.97] transition-all"
-            >
-              {product.secondaryCtaLabel}
-            </a>
+              {product.sections.map((section, idx) => (
+                <SectionBlock key={idx} section={section} />
+              ))}
+
+              <div className="flex flex-col sm:flex-row gap-3 mt-2">
+                <a
+                  href={product.ctaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-center bg-white text-black font-semibold px-7 py-4 rounded-full hover:bg-white/90 active:scale-[0.97] transition-all"
+                >
+                  {product.ctaLabel}
+                </a>
+                <a
+                  href={product.secondaryCtaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-center bg-white/10 hover:bg-white/15 text-white font-semibold px-7 py-4 rounded-full backdrop-blur-sm border border-white/20 active:scale-[0.97] transition-all"
+                >
+                  {product.secondaryCtaLabel}
+                </a>
+              </div>
+            </div>
+
           </div>
         </div>
       </main>

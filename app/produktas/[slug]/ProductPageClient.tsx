@@ -86,7 +86,7 @@ function YoutubeListDesktop({ videos }: { videos: readonly YoutubeVideo[] }) {
         >
           {/* 160×90 thumbnail */}
           <div
-            className="relative flex-shrink-0 w-40 rounded-lg overflow-hidden bg-black"
+            className="relative flex-shrink-0 w-40 rounded-lg overflow-hidden bg-black border-2 border-[#ff2d3f] shadow-[0_0_15px_rgba(255,45,63,0.4)] group-hover:shadow-[0_0_25px_rgba(255,45,63,0.7)] group-hover:scale-[1.02] transition-all duration-300"
             style={{ aspectRatio: '16/9' }}
           >
             <img
@@ -131,7 +131,7 @@ function YoutubeGridMobile({ videos }: { videos: readonly YoutubeVideo[] }) {
           href={video.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="group block rounded-lg overflow-hidden bg-white/5 border border-white/10 hover:border-white/30 transition-colors"
+          className="group block rounded-lg overflow-hidden bg-white/5 border-2 border-[#ff2d3f] shadow-[0_0_15px_rgba(255,45,63,0.4)] hover:shadow-[0_0_25px_rgba(255,45,63,0.7)] hover:scale-[1.02] transition-all duration-300"
         >
           <div className="relative aspect-video bg-black">
             <img
@@ -328,7 +328,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
                 href={product.susisiektiUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-pulse-glow block w-fit text-center border-2 border-[#ff2d3f] bg-transparent text-white font-semibold text-lg px-10 py-3 rounded-full hover:scale-105 active:scale-[0.97] transition-all duration-300 mt-8"
+                className="btn-pulse-glow block w-fit text-center border-2 border-[#ff2d3f] bg-transparent text-white font-semibold text-xl px-14 py-4 rounded-full hover:scale-105 active:scale-[0.97] transition-all duration-300 mt-8"
               >
                 Susisiekti
               </a>

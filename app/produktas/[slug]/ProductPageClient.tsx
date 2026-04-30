@@ -36,64 +36,71 @@ export default function ProductPageClient({ product }: { product: Product }) {
         backgroundPosition: 'center',
       }}
     >
-      {/* Dark gradient on right side (or bottom on mobile) for text readability */}
+      {/* Stronger dark gradient — covers more of the parking artifacts */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: isMobile
-            ? 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 30%, transparent 55%)'
-            : 'linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, transparent 60%)',
+            ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 25%, rgba(0,0,0,0.3) 55%, transparent 75%)'
+            : 'linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 30%, transparent 55%)',
           zIndex: 1,
         }}
       />
 
-      {/* Car with ground shadow */}
+      {/* Ground shadow — positioned in absolute screen coords, where the car wheels will be */}
       <div
+        className="absolute pointer-events-none"
+        style={{
+          ...(isMobile
+            ? {
+                bottom: '32vh',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '70vw',
+                height: '4vh',
+              }
+            : {
+                bottom: '12vh',
+                left: '20vw',
+                width: '35vw',
+                height: '5vh',
+              }),
+          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 40%, transparent 75%)',
+          filter: 'blur(12px)',
+          zIndex: 2,
+        }}
+      />
+
+      {/* The car PNG — sized so the FULL car (including wheels) fits in viewport */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`/cars/${product.id}.png?v=${v}`}
+        alt={product.name}
         className="absolute pointer-events-none select-none"
         style={{
           ...(isMobile
             ? {
-                bottom: '30%',
+                top: '15vh',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                width: '95vw',
-                height: '50vh',
+                width: 'auto',
+                height: '40vh',
+                maxWidth: '90vw',
               }
             : {
-                bottom: '5vh',
+                top: '15vh',
                 left: '5vw',
-                width: '55vw',
-                height: '80vh',
+                width: 'auto',
+                height: '60vh',
+                maxWidth: '50vw',
               }),
-          zIndex: 2,
+          objectFit: 'contain',
+          zIndex: 3,
         }}
-      >
-        {/* Ground shadow — elliptical blur underneath */}
-        <div
-          className="absolute"
-          style={{
-            bottom: '2%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '70%',
-            height: '8%',
-            background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.35) 40%, transparent 75%)',
-            filter: 'blur(8px)',
-          }}
-        />
+        draggable={false}
+      />
 
-        {/* The car itself */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`/cars/${product.id}.png?v=${v}`}
-          alt={product.name}
-          className="absolute inset-0 w-full h-full"
-          style={{ objectFit: 'contain' }}
-          draggable={false}
-        />
-      </div>
-
-      {/* Product info — right side on desktop, bottom on mobile */}
+      {/* Product info text */}
       <div
         className={`
           absolute z-10

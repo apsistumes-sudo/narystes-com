@@ -24,6 +24,9 @@ export default function SeamlessVideo({ src, poster, className, style, startOffs
   const [showB, setShowB] = useState(false);
   // Mirror of showB accessible inside the RAF closure without stale closure issues.
   const showBRef = useRef(false);
+  // Hidden until first seek completes so frame 0 never flashes on load.
+  const [isReady, setIsReady] = useState(startOffset <= 0);
+  const isReadyRef = useRef(startOffset <= 0);
 
   useEffect(() => {
     const a = videoARef.current;
@@ -38,10 +41,18 @@ export default function SeamlessVideo({ src, poster, className, style, startOffs
     const onTimeA = () => { if (a.currentTime < startOffset) a.currentTime = startOffset; };
     const onTimeB = () => { if (b.currentTime < startOffset) b.currentTime = startOffset; };
 
+    const onSeekedA = () => {
+      if (!isReadyRef.current && a.currentTime >= startOffset) {
+        isReadyRef.current = true;
+        setIsReady(true);
+      }
+    };
+
     a.addEventListener('loadedmetadata', onMetaA);
     b.addEventListener('loadedmetadata', onMetaB);
     a.addEventListener('timeupdate', onTimeA);
     b.addEventListener('timeupdate', onTimeB);
+    a.addEventListener('seeked', onSeekedA);
 
     const swap = (activeIsA: boolean) => {
       if (swapping) return;
@@ -81,6 +92,7 @@ export default function SeamlessVideo({ src, poster, className, style, startOffs
       b.removeEventListener('loadedmetadata', onMetaB);
       a.removeEventListener('timeupdate', onTimeA);
       b.removeEventListener('timeupdate', onTimeB);
+      a.removeEventListener('seeked', onSeekedA);
     };
   }, [src, startOffset]);
 
@@ -95,14 +107,14 @@ export default function SeamlessVideo({ src, poster, className, style, startOffs
         src={src}
         poster={poster}
         autoPlay muted playsInline preload="auto"
-        style={{ ...style, opacity: showB ? 0 : 1, transition }}
+        style={{ ...style, opacity: isReady && !showB ? 1 : 0, transition }}
       />
       <video
         ref={videoBRef}
         className={base}
         src={src}
         muted playsInline preload="auto"
-        style={{ ...style, opacity: showB ? 1 : 0, transition }}
+        style={{ ...style, opacity: isReady && showB ? 1 : 0, transition }}
       />
     </>
   );

@@ -92,12 +92,6 @@ export default function HeroParking() {
 
       <LightningText active={carsStopped} text="Rinkitės narystę" mobile={isMobile} />
 
-      {/* TEMPORARY DEBUG — remove after verification */}
-      <div className="fixed top-4 right-4 z-50 bg-black/80 text-white text-xs p-2 rounded font-mono">
-        v: {v}<br />
-        {isMobile ? 'MOBILE' : 'DESKTOP'}<br />
-        {videoSrc.split('/').pop()}
-      </div>
     </section>
   );
 }

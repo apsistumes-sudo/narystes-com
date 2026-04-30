@@ -328,7 +328,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
                 <SectionBlock key={idx} section={section} />
               ))}
 
-              <div className="flex flex-col sm:flex-row gap-3 mt-2">
+              <div className="flex items-center gap-4 mt-2">
                 <a
                   href={product.ctaUrl}
                   target="_blank"

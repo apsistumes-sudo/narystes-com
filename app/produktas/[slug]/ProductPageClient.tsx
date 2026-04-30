@@ -12,6 +12,12 @@ type ProductSection = {
   outro?: string;
 };
 
+type YoutubeVideo = {
+  url: string;
+  videoId: string;
+  title?: string;
+};
+
 type Product = {
   id: string;
   name: string;
@@ -19,6 +25,7 @@ type Product = {
   price: string;
   tagline: string;
   sections: readonly ProductSection[];
+  youtubeVideos?: readonly YoutubeVideo[];
   ctaLabel: string;
   ctaUrl: string;
   secondaryCtaLabel: string;
@@ -139,6 +146,51 @@ export default function ProductPageClient({ product }: { product: Product }) {
             )}
           </div>
         ))}
+
+        {product.youtubeVideos && product.youtubeVideos.length > 0 && (
+          <div className="mb-7">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {product.youtubeVideos.map((video, i) => (
+                <a
+                  key={i}
+                  href={video.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative block rounded-lg overflow-hidden bg-white/5 border border-white/10 hover:border-white/30 transition-colors"
+                >
+                  <div className="relative aspect-video bg-black">
+                    <img
+                      src={`https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`}
+                      alt={video.title || 'YouTube video'}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors">
+                      <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <svg className="w-5 h-5 ml-0.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <p
+                      className="text-white/90 text-sm leading-snug"
+                      style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {video.title || 'Žiūrėti YouTube'}
+                    </p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col sm:flex-row gap-3 mt-2">
           <a

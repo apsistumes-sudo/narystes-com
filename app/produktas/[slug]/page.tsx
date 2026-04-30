@@ -9,6 +9,12 @@ type ProductSection = {
   outro?: string;
 };
 
+type YoutubeVideo = {
+  url: string;
+  videoId: string;
+  title?: string;
+};
+
 type Product = {
   id: string;
   name: string;
@@ -16,6 +22,7 @@ type Product = {
   price: string;
   tagline: string;
   sections: ProductSection[];
+  youtubeVideos?: YoutubeVideo[];
   ctaLabel: string;
   ctaUrl: string;
   secondaryCtaLabel: string;
@@ -32,15 +39,24 @@ const PRODUCTS: Record<string, Product> = {
     tagline: 'Lietuvos didžiausia kripto bendruomenė.',
     sections: [
       {
-        heading: 'Apie narystę',
-        intro: 'Naujienos, analizė, diskusijos su tūkstančiais aktyvių narių.',
+        heading: 'Kodėl mumis pasitiki?',
         bulletList: [
-          'Privatūs Telegram ir Discord kanalai',
-          'Kasdieninė rinkos analizė lietuviškai',
-          'Tiesioginė bendruomenės pagalba',
-          'Ekskluzyvūs renginiai ir webinarai',
+          'Dirbame viešai 6 metus.',
+          'Daugiau nei 1000 teigiamų atsiliepimų Instagramo highlights.',
+          'Dalyvaujame kiekvienoje didelėje crypto konferencijoje — plečiame žinias.',
+          'Komandą sudaro 8 žmonės.',
         ],
       },
+      {
+        heading: 'Pamatyk mus veikiant',
+        intro: 'Keletas mūsų pasirodymų ir interviu YouTube:',
+      },
+    ],
+    youtubeVideos: [
+      { url: 'https://www.youtube.com/watch?v=mHfSKWPMo_A&t=526s', videoId: 'mHfSKWPMo_A' },
+      { url: 'https://www.youtube.com/watch?v=P9DpzPvLo4o&t=356s', videoId: 'P9DpzPvLo4o' },
+      { url: 'https://www.youtube.com/watch?v=-toE8D34FDk&t=705s', videoId: '-toE8D34FDk' },
+      { url: 'https://www.youtube.com/watch?v=nejYlXEB4xk&t=131s', videoId: 'nejYlXEB4xk' },
     ],
     ctaLabel: 'Tapti nariu',
     ctaUrl: 'https://example.com/checkout/crypto-lietuva',
@@ -106,6 +122,20 @@ const PRODUCTS: Record<string, Product> = {
   },
 };
 
+async function fetchYoutubeTitle(videoId: string): Promise<string> {
+  try {
+    const res = await fetch(
+      `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`,
+      { next: { revalidate: 86400 } }
+    );
+    if (!res.ok) return 'YouTube video';
+    const data = await res.json();
+    return data.title || 'YouTube video';
+  } catch {
+    return 'YouTube video';
+  }
+}
+
 export function generateStaticParams() {
   return Object.keys(PRODUCTS).map(slug => ({ slug }));
 }
@@ -121,5 +151,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const product = PRODUCTS[slug];
   if (!product) notFound();
-  return <ProductPageClient product={product} />;
+
+  let videosWithTitles = product.youtubeVideos;
+  if (product.youtubeVideos && product.youtubeVideos.length > 0) {
+    videosWithTitles = await Promise.all(
+      product.youtubeVideos.map(async v => ({
+        ...v,
+        title: v.title || await fetchYoutubeTitle(v.videoId),
+      }))
+    );
+  }
+
+  const productWithVideos = { ...product, youtubeVideos: videosWithTitles };
+
+  return <ProductPageClient product={productWithVideos} />;
 }

@@ -47,11 +47,8 @@ export default function ProductPageClient({ product }: { product: Product }) {
         }}
       />
 
-      {/* The car PNG — large, left side on desktop, centered on mobile */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={`/cars/${product.id}.png?v=${v}`}
-        alt={product.name}
+      {/* Car with ground shadow */}
+      <div
         className="absolute pointer-events-none select-none"
         style={{
           ...(isMobile
@@ -60,20 +57,41 @@ export default function ProductPageClient({ product }: { product: Product }) {
                 left: '50%',
                 transform: 'translateX(-50%)',
                 width: '95vw',
-                maxHeight: '50vh',
-                objectFit: 'contain',
+                height: '50vh',
               }
             : {
                 bottom: '5vh',
                 left: '5vw',
                 width: '55vw',
-                maxHeight: '80vh',
-                objectFit: 'contain',
+                height: '80vh',
               }),
           zIndex: 2,
         }}
-        draggable={false}
-      />
+      >
+        {/* Ground shadow — elliptical blur underneath */}
+        <div
+          className="absolute"
+          style={{
+            bottom: '2%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '70%',
+            height: '8%',
+            background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.35) 40%, transparent 75%)',
+            filter: 'blur(8px)',
+          }}
+        />
+
+        {/* The car itself */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`/cars/${product.id}.png?v=${v}`}
+          alt={product.name}
+          className="absolute inset-0 w-full h-full"
+          style={{ objectFit: 'contain' }}
+          draggable={false}
+        />
+      </div>
 
       {/* Product info — right side on desktop, bottom on mobile */}
       <div

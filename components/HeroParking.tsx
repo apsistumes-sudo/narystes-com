@@ -21,8 +21,6 @@ const CARS_MOBILE = [
   { id: 'aventador', href: '/produktas/aventador', left: '68%', top: '60%', width: '30%', height: '22%' },
 ];
 
-const STOP_TIME = 1.7;
-
 export default function HeroParking() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [carsStopped, setCarsStopped] = useState(false);
@@ -38,7 +36,15 @@ export default function HeroParking() {
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
-    const onTime  = () => { if (el.currentTime >= STOP_TIME && !carsStopped) setCarsStopped(true); };
+
+    // Fire 80ms before the video ends so the flash overlaps the final frame
+    const FLASH_LEAD_MS = 80;
+
+    const onTime  = () => {
+      if (carsStopped) return;
+      const remaining = (el.duration - el.currentTime) * 1000;
+      if (remaining <= FLASH_LEAD_MS) setCarsStopped(true);
+    };
     const onEnded = () => setCarsStopped(true);
     el.addEventListener('timeupdate', onTime);
     el.addEventListener('ended', onEnded);

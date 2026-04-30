@@ -322,7 +322,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
             {/* RIGHT — membership info + CTA */}
             <div className="flex-1 flex flex-col max-h-[84dvh] overflow-y-auto py-14">
               {product.heroHeadline && (
-                <h1 className="font-bold text-white leading-tight text-4xl lg:text-5xl mb-6">
+                <h1 className="font-bold text-white leading-snug text-2xl lg:text-3xl mb-6">
                   {product.heroHeadline}
                 </h1>
               )}
@@ -335,7 +335,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
                 href={product.susisiektiUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-glow inline-block text-center bg-white text-black font-semibold text-lg px-10 py-3.5 rounded-full hover:bg-white/90 active:scale-[0.97] transition-all mt-8 self-start"
+                className="btn-glow block w-fit text-center bg-white text-black font-bold text-xl px-12 py-4 rounded-full hover:scale-105 hover:bg-white/95 active:scale-[0.97] transition-all duration-200 mt-8"
               >
                 Susisiekti
               </a>

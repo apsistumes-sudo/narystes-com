@@ -38,7 +38,8 @@ export default function SeamlessVideo({ src, poster, className, style }: Props) 
     const b = videoBRef.current;
     if (!a || !b) return;
 
-    const FADE_WINDOW = 0.4;
+    const FADE_WINDOW = 0.8;
+    let rafId: number;
 
     const tick = () => {
       const aTime = a.currentTime;
@@ -47,10 +48,11 @@ export default function SeamlessVideo({ src, poster, className, style }: Props) 
       const bNearBoundary = bTime < FADE_WINDOW || bTime > duration - FADE_WINDOW;
       if (aNearBoundary && !bNearBoundary) setShowB(true);
       else if (bNearBoundary && !aNearBoundary) setShowB(false);
+      rafId = requestAnimationFrame(tick);
     };
 
-    const id = setInterval(tick, 100);
-    return () => clearInterval(id);
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, [duration]);
 
   const baseClass = className ?? 'absolute inset-0 w-full h-full object-cover';

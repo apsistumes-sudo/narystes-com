@@ -25,6 +25,7 @@ export default function HeroParking() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [carsStopped, setCarsStopped] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -55,17 +56,21 @@ export default function HeroParking() {
   const videoSrc  = isMobile ? `/web_hero_mobile.mp4?v=${v}`        : `/web_hero.mp4?v=${v}`;
   const posterSrc = isMobile ? `/web_hero_mobile_poster.jpg?v=${v}` : `/web_hero_poster.jpg?v=${v}`;
 
+  // Reset when source switches (desktop ↔ mobile)
+  useEffect(() => { setVideoPlaying(false); }, [videoSrc]);
+
   return (
     <section className="relative w-screen h-[100dvh] overflow-hidden bg-black select-none">
       <video
         ref={videoRef}
         key={videoSrc}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${carsStopped ? 'opacity-0' : 'opacity-100'}`}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${carsStopped || !videoPlaying ? 'opacity-0' : 'opacity-100'}`}
         src={videoSrc}
         poster={posterSrc}
         autoPlay
         muted
         playsInline
+        onPlaying={() => setVideoPlaying(true)}
       />
 
       {carsStopped && (

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ASSET_VERSION } from '@/lib/asset-version';
 
@@ -17,6 +17,8 @@ type Product = {
 
 export default function ProductPageClient({ product }: { product: Product }) {
   const [isMobile, setIsMobile] = useState(false);
+  const [desktopVideoExists, setDesktopVideoExists] = useState(false);
+  const desktopVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -26,33 +28,55 @@ export default function ProductPageClient({ product }: { product: Product }) {
   }, []);
 
   const v = ASSET_VERSION;
-  const videoSrc  = `/products/${product.id}.mp4?v=${v}`;
-  const posterSrc = `/products/${product.id}_poster.jpg?v=${v}`;
+  const desktopVideoSrc = `/products/${product.id}.mp4?v=${v}`;
+  const mobileVideoSrc  = `/products/${product.id}_mobile.mp4?v=${v}`;
+  const posterSrc       = `/products/${product.id}_poster.jpg?v=${v}`;
+
+  // Probe whether the 16:9 desktop video exists; fall back to poster if not.
+  useEffect(() => {
+    if (isMobile) return;
+    fetch(desktopVideoSrc, { method: 'HEAD' })
+      .then(r => setDesktopVideoExists(r.ok))
+      .catch(() => setDesktopVideoExists(false));
+  }, [isMobile, desktopVideoSrc]);
 
   return (
     <main className="relative w-screen h-[100dvh] overflow-hidden bg-black">
-      {/* Looping product video — full bleed */}
-      {/* Background blur layer — same video stretched + heavily blurred to fill sides */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover"
-        src={videoSrc}
-        poster={posterSrc}
-        autoPlay loop muted playsInline
-        style={{
-          zIndex: 0,
-          filter: 'blur(40px) brightness(0.5)',
-          transform: 'scale(1.15)',
-        }}
-      />
+      {/* MOBILE: vertical 9:16 video, full bleed */}
+      {isMobile && (
+        <video
+          className="absolute inset-0 w-full h-full object-cover"
+          src={mobileVideoSrc}
+          poster={posterSrc}
+          autoPlay loop muted playsInline
+          style={{ zIndex: 0 }}
+        />
+      )}
 
-      {/* Foreground video — native aspect ratio, centered, contained */}
-      <video
-        className="absolute inset-0 w-full h-full object-contain"
-        src={videoSrc}
-        poster={posterSrc}
-        autoPlay loop muted playsInline
-        style={{ zIndex: 1 }}
-      />
+      {/* DESKTOP + 16:9 video exists: plays full bleed */}
+      {!isMobile && desktopVideoExists && (
+        <video
+          ref={desktopVideoRef}
+          className="absolute inset-0 w-full h-full object-cover"
+          src={desktopVideoSrc}
+          poster={posterSrc}
+          autoPlay loop muted playsInline
+          style={{ zIndex: 0 }}
+        />
+      )}
+
+      {/* DESKTOP fallback: static poster until 16:9 videos are generated */}
+      {!isMobile && !desktopVideoExists && (
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url(${posterSrc})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            zIndex: 0,
+          }}
+        />
+      )}
 
       {/* Gradient overlay for text readability */}
       <div
@@ -65,7 +89,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
         }}
       />
 
-      {/* Product info — right side desktop, bottom mobile */}
+      {/* Product info */}
       <div
         className={`
           absolute z-10

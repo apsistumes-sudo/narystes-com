@@ -45,3 +45,6 @@ body {
 .btn-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }

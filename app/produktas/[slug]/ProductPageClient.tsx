@@ -1,8 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import RainOverlay from '@/components/RainOverlay';
-import LightningText from '@/components/LightningText';
 import { ASSET_VERSION } from '@/lib/asset-version';
 
 type Product = {
@@ -18,7 +16,6 @@ type Product = {
 };
 
 export default function ProductPageClient({ product }: { product: Product }) {
-  const [animatedIn, setAnimatedIn] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -28,85 +25,69 @@ export default function ProductPageClient({ product }: { product: Product }) {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  useEffect(() => {
-    const t = setTimeout(() => setAnimatedIn(true), 50);
-    return () => clearTimeout(t);
-  }, []);
-
-  const textOnLeft = !isMobile && product.position === 'right';
+  const v = ASSET_VERSION;
 
   return (
-    <main className="relative w-screen h-[100dvh] overflow-hidden bg-black">
-      {/* Clean parking lot background (blurred where cars were) */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
-        style={{
-          backgroundImage: `url(/parking_clean.jpg?v=${ASSET_VERSION})`,
-          opacity: animatedIn ? 1 : 0,
-          zIndex: 0,
-        }}
-      />
-
-      {/* Selected car as transparent PNG, animated to center stage */}
-      <div
-        className={`
-          absolute inset-0 flex items-end justify-center
-          transition-all duration-1000 ease-out
-          ${animatedIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}
-        `}
-        style={{ zIndex: 5 }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`/cars/${product.id}.png?v=${ASSET_VERSION}`}
-          alt={product.name}
-          className="object-contain"
-          style={{
-            width: isMobile ? '95%' : '60%',
-            maxHeight: isMobile ? '60%' : '85%',
-            marginLeft: isMobile ? 0 : (textOnLeft ? 'auto' : 0),
-            marginRight: isMobile ? 0 : (textOnLeft ? '5%' : 'auto'),
-            marginBottom: isMobile ? '35%' : '0',
-          }}
-          draggable={false}
-        />
-      </div>
-
-      {/* Subtle dark gradient on text side */}
+    <main
+      className="relative w-screen h-[100dvh] overflow-hidden"
+      style={{
+        backgroundImage: `url(/parking_clean.jpg?v=${v})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      {/* Dark gradient on right side (or bottom on mobile) for text readability */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: isMobile
             ? 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 30%, transparent 55%)'
-            : textOnLeft
-              ? 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, transparent 55%)'
-              : 'linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, transparent 55%)',
-          zIndex: 10,
+            : 'linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, transparent 60%)',
+          zIndex: 1,
         }}
       />
 
-      <RainOverlay posterUrl={`/parking_clean.jpg?v=${ASSET_VERSION}`} />
+      {/* The car PNG — large, left side on desktop, centered on mobile */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`/cars/${product.id}.png?v=${v}`}
+        alt={product.name}
+        className="absolute pointer-events-none select-none"
+        style={{
+          ...(isMobile
+            ? {
+                bottom: '30%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '95vw',
+                maxHeight: '50vh',
+                objectFit: 'contain',
+              }
+            : {
+                bottom: '5vh',
+                left: '5vw',
+                width: '55vw',
+                maxHeight: '80vh',
+                objectFit: 'contain',
+              }),
+          zIndex: 2,
+        }}
+        draggable={false}
+      />
 
-      {/* Product info */}
+      {/* Product info — right side on desktop, bottom on mobile */}
       <div
         className={`
-          absolute z-20 transition-all duration-700 ease-out
-          ${animatedIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+          absolute z-10
           ${isMobile
             ? 'bottom-0 left-0 right-0 p-6 pb-12'
-            : textOnLeft
-              ? 'top-1/2 left-12 -translate-y-1/2 max-w-md p-8'
-              : 'top-1/2 right-12 -translate-y-1/2 max-w-md p-8'}
+            : 'top-1/2 right-12 -translate-y-1/2 max-w-md p-8'}
         `}
-        style={{ transitionDelay: '300ms' }}
       >
         <div className="text-xs uppercase tracking-[0.3em] text-white/60 mb-3">
           {product.subtitle}
         </div>
-        <h1
-          className={`font-bold text-white tracking-tight mb-4 ${isMobile ? 'text-3xl' : 'text-5xl'}`}
-          style={{ fontFamily: 'var(--font-space)' }}
-        >
+        <h1 className={`font-bold text-white tracking-tight mb-4 ${isMobile ? 'text-3xl' : 'text-5xl'}`}>
           {product.name}
         </h1>
         <div className="text-2xl text-white/90 font-light mb-6">{product.price}</div>
@@ -131,12 +112,10 @@ export default function ProductPageClient({ product }: { product: Product }) {
 
       <Link
         href="/"
-        className="absolute top-6 left-6 z-30 text-white/80 hover:text-white text-sm flex items-center gap-2 transition-colors bg-black/40 backdrop-blur-sm px-4 py-2 rounded-full"
+        className="absolute top-6 left-6 z-20 text-white/80 hover:text-white text-sm flex items-center gap-2 transition-colors bg-black/40 backdrop-blur-sm px-4 py-2 rounded-full"
       >
         ← Atgal
       </Link>
-
-      <LightningText active={animatedIn} text="" mobile={isMobile} />
     </main>
   );
 }

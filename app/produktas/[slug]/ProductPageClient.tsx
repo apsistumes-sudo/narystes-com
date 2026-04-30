@@ -32,15 +32,26 @@ export default function ProductPageClient({ product }: { product: Product }) {
   return (
     <main className="relative w-screen h-[100dvh] overflow-hidden bg-black">
       {/* Looping product video — full bleed */}
+      {/* Background blur layer — same video stretched + heavily blurred to fill sides */}
       <video
         className="absolute inset-0 w-full h-full object-cover"
         src={videoSrc}
         poster={posterSrc}
-        autoPlay
-        loop
-        muted
-        playsInline
-        style={{ zIndex: 0 }}
+        autoPlay loop muted playsInline
+        style={{
+          zIndex: 0,
+          filter: 'blur(40px) brightness(0.5)',
+          transform: 'scale(1.15)',
+        }}
+      />
+
+      {/* Foreground video — native aspect ratio, centered, contained */}
+      <video
+        className="absolute inset-0 w-full h-full object-contain"
+        src={videoSrc}
+        poster={posterSrc}
+        autoPlay loop muted playsInline
+        style={{ zIndex: 1 }}
       />
 
       {/* Gradient overlay for text readability */}
@@ -50,7 +61,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
           background: isMobile
             ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 55%, transparent 75%)'
             : 'linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, rgba(0,0,0,0.05) 60%, transparent 75%)',
-          zIndex: 1,
+          zIndex: 2,
         }}
       />
 

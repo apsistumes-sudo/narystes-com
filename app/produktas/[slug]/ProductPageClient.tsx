@@ -1,7 +1,8 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ASSET_VERSION } from '@/lib/asset-version';
+import SeamlessVideo from '@/components/SeamlessVideo';
 
 type Product = {
   id: string;
@@ -18,7 +19,6 @@ type Product = {
 export default function ProductPageClient({ product }: { product: Product }) {
   const [isMobile, setIsMobile] = useState(false);
   const [desktopVideoExists, setDesktopVideoExists] = useState(false);
-  const desktopVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -42,25 +42,20 @@ export default function ProductPageClient({ product }: { product: Product }) {
 
   return (
     <main className="relative w-screen h-[100dvh] overflow-hidden bg-black">
-      {/* MOBILE: vertical 9:16 video, full bleed */}
+      {/* MOBILE: vertical 9:16 video, seamlessly looped */}
       {isMobile && (
-        <video
-          className="absolute inset-0 w-full h-full object-cover"
+        <SeamlessVideo
           src={mobileVideoSrc}
           poster={posterSrc}
-          autoPlay loop muted playsInline
           style={{ zIndex: 0 }}
         />
       )}
 
-      {/* DESKTOP + 16:9 video exists: plays full bleed */}
+      {/* DESKTOP + 16:9 video exists: plays full bleed, seamlessly looped */}
       {!isMobile && desktopVideoExists && (
-        <video
-          ref={desktopVideoRef}
-          className="absolute inset-0 w-full h-full object-cover"
+        <SeamlessVideo
           src={desktopVideoSrc}
           poster={posterSrc}
-          autoPlay loop muted playsInline
           style={{ zIndex: 0 }}
         />
       )}

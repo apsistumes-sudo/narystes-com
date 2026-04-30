@@ -40,7 +40,7 @@ export default function HeroParking() {
 
     // Trigger relative to actual video duration so encoding differences don't cause drift.
     // Mobile uses a shorter lead because the 2.4x approach ends very close to the video's end.
-    const FLASH_LEAD_MS = isMobile ? 600 : 800;
+    const FLASH_LEAD_MS = isMobile ? 400 : 800;
 
     let triggered = false;
 

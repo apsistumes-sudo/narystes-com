@@ -16,18 +16,6 @@ type Product = {
   position: 'left' | 'center' | 'right';
 };
 
-const CROP_DESKTOP = {
-  left:   { size: '300%', position: '8% 70%'  },
-  center: { size: '280%', position: '50% 70%' },
-  right:  { size: '300%', position: '92% 70%' },
-};
-
-const CROP_MOBILE = {
-  left:   { size: '180%', position: '15% 70%' },
-  center: { size: '170%', position: '50% 70%' },
-  right:  { size: '180%', position: '85% 70%' },
-};
-
 export default function ProductPageClient({ product }: { product: Product }) {
   const [animatedIn, setAnimatedIn] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -44,42 +32,61 @@ export default function ProductPageClient({ product }: { product: Product }) {
     return () => clearTimeout(t);
   }, []);
 
-  const crop = isMobile ? CROP_MOBILE[product.position] : CROP_DESKTOP[product.position];
-  const posterSrc = isMobile ? '/web_hero_mobile_poster.jpg' : '/web_hero_poster.jpg';
-
   const textOnLeft = !isMobile && product.position === 'right';
 
   return (
     <main className="relative w-screen h-[100dvh] overflow-hidden bg-black">
-      {/* Hero poster cropped via background-image to show only the selected car */}
+      {/* Clean parking lot background (blurred where cars were) */}
       <div
-        className="absolute inset-0 transition-all duration-1000 ease-out"
+        className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
         style={{
-          backgroundImage: `url(${posterSrc})`,
-          backgroundSize: crop.size,
-          backgroundPosition: crop.position,
+          backgroundImage: 'url(/parking_clean.jpg)',
           opacity: animatedIn ? 1 : 0,
-          transform: animatedIn ? 'scale(1)' : 'scale(0.97)',
           zIndex: 0,
         }}
       />
 
-      {/* Gradient on text side for readability */}
+      {/* Selected car as transparent PNG, animated to center stage */}
+      <div
+        className={`
+          absolute inset-0 flex items-end justify-center
+          transition-all duration-1000 ease-out
+          ${animatedIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}
+        `}
+        style={{ zIndex: 5 }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`/cars/${product.id}.png`}
+          alt={product.name}
+          className="object-contain"
+          style={{
+            width: isMobile ? '95%' : '60%',
+            maxHeight: isMobile ? '60%' : '85%',
+            marginLeft: isMobile ? 0 : (textOnLeft ? 'auto' : 0),
+            marginRight: isMobile ? 0 : (textOnLeft ? '5%' : 'auto'),
+            marginBottom: isMobile ? '35%' : '0',
+          }}
+          draggable={false}
+        />
+      </div>
+
+      {/* Subtle dark gradient on text side */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: isMobile
-            ? 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, transparent 60%)'
+            ? 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 30%, transparent 55%)'
             : textOnLeft
-              ? 'linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 40%, transparent 60%)'
-              : 'linear-gradient(to left, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 40%, transparent 60%)',
-          zIndex: 5,
+              ? 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, transparent 55%)'
+              : 'linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, transparent 55%)',
+          zIndex: 10,
         }}
       />
 
-      <RainOverlay posterUrl={posterSrc} />
+      <RainOverlay />
 
-      {/* Product info panel */}
+      {/* Product info */}
       <div
         className={`
           absolute z-20 transition-all duration-700 ease-out

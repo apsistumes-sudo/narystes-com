@@ -68,17 +68,19 @@ export default function LightningText({
         className={`pointer-events-none absolute inset-0 bg-white transition-opacity duration-[80ms] ${flash2 ? 'opacity-60' : 'opacity-0'}`}
         style={{ zIndex: 30 }}
       />
-      <div
-        className={`pointer-events-none absolute inset-x-0 flex justify-center px-4 transition-all duration-500 ease-out ${mobile ? 'top-[16%]' : 'top-[14%]'} ${showText ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.92]'}`}
-        style={{ zIndex: 25 }}
-      >
-        <h1
-          className={`text-white font-bold tracking-tight text-center transition-[text-shadow] duration-300 ${mobile ? 'text-4xl' : 'text-6xl md:text-7xl'}`}
-          style={{ fontFamily: 'var(--font-space)', textShadow }}
+      {text && (
+        <div
+          className={`pointer-events-none absolute inset-x-0 flex justify-center px-4 transition-all duration-500 ease-out ${mobile ? 'top-[16%]' : 'top-[14%]'} ${showText ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.92]'}`}
+          style={{ zIndex: 25 }}
         >
-          {text}
-        </h1>
-      </div>
+          <h1
+            className={`text-white font-bold tracking-tight text-center transition-[text-shadow] duration-300 ${mobile ? 'text-4xl' : 'text-6xl md:text-7xl'}`}
+            style={{ fontFamily: 'var(--font-space)', textShadow }}
+          >
+            {text}
+          </h1>
+        </div>
+      )}
     </>
   );
 }

@@ -225,14 +225,11 @@ export default function ProductPageClient({ product }: { product: Product }) {
           </div>
 
           <div className="px-6 pt-6 pb-2">
-            <div className="text-xs uppercase tracking-[0.3em] text-white/70 mb-3">
-              {product.subtitle}
-            </div>
-            <h1 className="font-bold text-white tracking-tight text-3xl mb-3">
-              {product.name}
-            </h1>
-            <div className="text-2xl text-white/90 font-light mb-2">{product.price}</div>
-            <p className="text-white/70 text-sm mb-7 leading-relaxed">{product.tagline}</p>
+            {product.heroHeadline && (
+              <h1 className="font-bold text-white leading-snug text-2xl mb-5">
+                {product.heroHeadline}
+              </h1>
+            )}
             {product.sections.map((section, idx) => (
               <SectionBlock key={idx} section={section} />
             ))}
@@ -246,22 +243,14 @@ export default function ProductPageClient({ product }: { product: Product }) {
             </div>
           )}
 
-          <div className="px-6 pb-12 flex flex-col gap-3">
+          <div className="px-6 pb-12">
             <a
-              href={product.ctaUrl}
+              href={product.susisiektiUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-center bg-white text-black font-semibold px-7 py-4 rounded-full hover:bg-white/90 active:scale-[0.97] transition-all"
+              className="btn-pulse-glow block w-full text-center border-2 border-[#ff2d3f] bg-transparent text-white font-semibold text-lg rounded-full px-10 py-3 hover:scale-105 active:scale-[0.97] transition-all duration-300"
             >
-              {product.ctaLabel}
-            </a>
-            <a
-              href={product.secondaryCtaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-center bg-white/10 hover:bg-white/15 text-white font-semibold px-7 py-4 rounded-full backdrop-blur-sm border border-white/20 active:scale-[0.97] transition-all"
-            >
-              {product.secondaryCtaLabel}
+              Susisiekti
             </a>
           </div>
         </main>
@@ -335,7 +324,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
                 href={product.susisiektiUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-glow block w-fit text-center bg-white text-black font-bold text-xl px-12 py-4 rounded-full hover:scale-105 hover:bg-white/95 active:scale-[0.97] transition-all duration-200 mt-8"
+                className="btn-pulse-glow block w-fit text-center border-2 border-[#ff2d3f] bg-transparent text-white font-semibold text-lg px-10 py-3 rounded-full hover:scale-105 active:scale-[0.97] transition-all duration-300 mt-8"
               >
                 Susisiekti
               </a>

@@ -8,71 +8,86 @@ type Props = {
   style?: React.CSSProperties;
 };
 
+// Seconds before end of active video to start the crossfade.
+const FADE_S = 0.6;
+
 /**
- * Eliminates the visible loop snap by stacking two video elements offset by
- * half the duration and crossfading whichever is NOT near its loop boundary.
+ * Smooth infinite video loop: two video elements alternate.
+ * When the active video is FADE_S seconds from its end, the idle
+ * video is rewound to 0, played, and faded in while the active
+ * video fades out. No loop attribute — no browser-level hard cut.
  */
 export default function SeamlessVideo({ src, poster, className, style }: Props) {
   const videoARef = useRef<HTMLVideoElement>(null);
   const videoBRef = useRef<HTMLVideoElement>(null);
   const [showB, setShowB] = useState(false);
-  const [duration, setDuration] = useState<number>(0);
+  // Mirror of showB accessible inside the RAF closure without stale closure issues.
+  const showBRef = useRef(false);
 
   useEffect(() => {
-    const a = videoARef.current;
-    if (!a) return;
-    const onMeta = () => setDuration(a.duration || 0);
-    a.addEventListener('loadedmetadata', onMeta);
-    return () => a.removeEventListener('loadedmetadata', onMeta);
-  }, [src]);
-
-  useEffect(() => {
-    const b = videoBRef.current;
-    if (!b || !duration) return;
-    b.currentTime = duration / 2;
-  }, [duration]);
-
-  useEffect(() => {
-    if (!duration) return;
     const a = videoARef.current;
     const b = videoBRef.current;
     if (!a || !b) return;
 
-    const FADE_WINDOW = 0.8;
     let rafId: number;
+    let swapping = false;
+
+    const swap = (activeIsA: boolean) => {
+      if (swapping) return;
+      swapping = true;
+
+      const incoming = activeIsA ? b : a;
+      const outgoing = activeIsA ? a : b;
+
+      // Rewind the idle video and start it.
+      incoming.currentTime = 0;
+      incoming.play().catch(() => {});
+
+      // Flip the opacity state.
+      const next = !showBRef.current;
+      showBRef.current = next;
+      setShowB(next);
+
+      // After the crossfade + a small buffer, park the outgoing video.
+      setTimeout(() => {
+        outgoing.pause();
+        outgoing.currentTime = 0;
+        swapping = false;
+      }, FADE_S * 1000 + 150);
+    };
 
     const tick = () => {
-      const aTime = a.currentTime;
-      const bTime = b.currentTime;
-      const aNearBoundary = aTime < FADE_WINDOW || aTime > duration - FADE_WINDOW;
-      const bNearBoundary = bTime < FADE_WINDOW || bTime > duration - FADE_WINDOW;
-      if (aNearBoundary && !bNearBoundary) setShowB(true);
-      else if (bNearBoundary && !aNearBoundary) setShowB(false);
+      const activeIsA = !showBRef.current;
+      const active = activeIsA ? a : b;
+      if (!swapping && active.duration > 0 && active.currentTime >= active.duration - FADE_S) {
+        swap(activeIsA);
+      }
       rafId = requestAnimationFrame(tick);
     };
 
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [duration]);
+  }, [src]);
 
-  const baseClass = className ?? 'absolute inset-0 w-full h-full object-cover';
+  const base = className ?? 'absolute inset-0 w-full h-full object-cover';
+  const transition = `opacity ${FADE_S * 1000}ms ease-in-out`;
 
   return (
     <>
       <video
         ref={videoARef}
-        className={baseClass}
+        className={base}
         src={src}
         poster={poster}
-        autoPlay loop muted playsInline
-        style={{ ...style, opacity: showB ? 0 : 1, transition: 'opacity 400ms ease-in-out' }}
+        autoPlay muted playsInline
+        style={{ ...style, opacity: showB ? 0 : 1, transition }}
       />
       <video
         ref={videoBRef}
-        className={baseClass}
+        className={base}
         src={src}
-        autoPlay loop muted playsInline
-        style={{ ...style, opacity: showB ? 1 : 0, transition: 'opacity 400ms ease-in-out' }}
+        muted playsInline
+        style={{ ...style, opacity: showB ? 1 : 0, transition }}
       />
     </>
   );

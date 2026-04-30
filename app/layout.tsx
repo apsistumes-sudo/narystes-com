@@ -1,0 +1,32 @@
+import type { Metadata } from "next";
+import { Space_Grotesk, Outfit } from "next/font/google";
+import "./globals.css";
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+});
+
+export const metadata: Metadata = {
+  title: "Narystes.com",
+  description: "Išskirtiniai produktai. Ribotas prieinamumas.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="lt" className={`${spaceGrotesk.variable} ${outfit.variable}`}>
+      <body>{children}</body>
+    </html>
+  );
+}

@@ -26,17 +26,21 @@ export default function ProductPageClient({ product }: { product: Product }) {
   }, []);
 
   const v = ASSET_VERSION;
+  const videoSrc  = `/products/${product.id}.mp4?v=${v}`;
+  const posterSrc = `/products/${product.id}_poster.jpg?v=${v}`;
 
   return (
     <main className="relative w-screen h-[100dvh] overflow-hidden bg-black">
-      {/* Full-bleed car photo as background */}
-      <div
-        className="absolute inset-0 bg-cover"
-        style={{
-          backgroundImage: `url(/cars/${product.id}.jpg?v=${v})`,
-          backgroundPosition: isMobile ? 'center 40%' : 'right center',
-          zIndex: 0,
-        }}
+      {/* Looping product video — full bleed */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover"
+        src={videoSrc}
+        poster={posterSrc}
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{ zIndex: 0 }}
       />
 
       {/* Gradient overlay for text readability */}
@@ -44,19 +48,19 @@ export default function ProductPageClient({ product }: { product: Product }) {
         className="absolute inset-0 pointer-events-none"
         style={{
           background: isMobile
-            ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 25%, rgba(0,0,0,0.2) 55%, transparent 75%)'
-            : 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.1) 60%, transparent 75%)',
+            ? 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 55%, transparent 75%)'
+            : 'linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 35%, rgba(0,0,0,0.05) 60%, transparent 75%)',
           zIndex: 1,
         }}
       />
 
-      {/* Product info — left side on desktop, bottom on mobile */}
+      {/* Product info — right side desktop, bottom mobile */}
       <div
         className={`
           absolute z-10
           ${isMobile
             ? 'bottom-0 left-0 right-0 p-6 pb-12'
-            : 'top-1/2 left-12 -translate-y-1/2 max-w-md p-8'}
+            : 'top-1/2 right-12 -translate-y-1/2 max-w-md p-8'}
         `}
       >
         <div className="text-xs uppercase tracking-[0.3em] text-white/70 mb-3">

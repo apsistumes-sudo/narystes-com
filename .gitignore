@@ -47,3 +47,6 @@ next-env.d.ts
 /tlf versija.mp4
 /web_source.mp4
 /webuifix.mp4
+
+# Large source video copy in public/
+public/web_source.mp4

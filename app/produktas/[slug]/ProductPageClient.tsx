@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import RainOverlay from '@/components/RainOverlay';
 import LightningText from '@/components/LightningText';
+import { ASSET_VERSION } from '@/lib/asset-version';
 
 type Product = {
   id: string;
@@ -40,7 +41,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
       <div
         className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
         style={{
-          backgroundImage: 'url(/parking_clean.jpg)',
+          backgroundImage: `url(/parking_clean.jpg?v=${ASSET_VERSION})`,
           opacity: animatedIn ? 1 : 0,
           zIndex: 0,
         }}
@@ -57,7 +58,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={`/cars/${product.id}.png`}
+          src={`/cars/${product.id}.png?v=${ASSET_VERSION}`}
           alt={product.name}
           className="object-contain"
           style={{

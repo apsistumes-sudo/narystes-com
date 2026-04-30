@@ -351,7 +351,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
           <div className="w-full max-w-[1280px] mx-auto px-10 flex items-center gap-14">
 
             {/* LEFT — "Pamatyk mus veikiant" + vertical video list */}
-            <div className="no-scrollbar flex-1 flex flex-col max-h-[84dvh] overflow-y-auto py-14">
+            <div className="flex-1 flex flex-col max-h-[84dvh] py-14">
               {hasVideos && product.youtubeVideos ? (
                 <>
                   <h2 className="text-white font-bold text-2xl lg:text-4xl mb-2">Pamatyk mus veikiant</h2>
@@ -366,7 +366,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
             </div>
 
             {/* RIGHT — membership info + CTA */}
-            <div className="no-scrollbar flex-1 flex flex-col max-h-[84dvh] overflow-y-auto py-14">
+            <div className="flex-1 flex flex-col max-h-[84dvh] py-14">
               {product.heroHeadline && (
                 <h1 className="font-bold text-white leading-snug text-2xl lg:text-3xl mb-6">
                   {product.heroHeadline}

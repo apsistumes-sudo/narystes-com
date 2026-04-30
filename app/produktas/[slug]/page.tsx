@@ -30,6 +30,14 @@ type Product = {
   position: 'left' | 'center' | 'right';
 };
 
+// Same 4 videos shown on every tier page
+const SOCIAL_PROOF_VIDEOS: YoutubeVideo[] = [
+  { url: 'https://www.youtube.com/watch?v=mHfSKWPMo_A&t=526s', videoId: 'mHfSKWPMo_A' },
+  { url: 'https://www.youtube.com/watch?v=P9DpzPvLo4o&t=356s', videoId: 'P9DpzPvLo4o' },
+  { url: 'https://www.youtube.com/watch?v=-toE8D34FDk&t=705s', videoId: '-toE8D34FDk' },
+  { url: 'https://www.youtube.com/watch?v=nejYlXEB4xk&t=131s', videoId: 'nejYlXEB4xk' },
+];
+
 const PRODUCTS: Record<string, Product> = {
   divo: {
     id: 'divo',
@@ -47,17 +55,8 @@ const PRODUCTS: Record<string, Product> = {
           'Komandą sudaro 8 žmonės.',
         ],
       },
-      {
-        heading: 'Pamatyk mus veikiant',
-        intro: 'Keletas mūsų pasirodymų ir interviu YouTube:',
-      },
     ],
-    youtubeVideos: [
-      { url: 'https://www.youtube.com/watch?v=mHfSKWPMo_A&t=526s', videoId: 'mHfSKWPMo_A' },
-      { url: 'https://www.youtube.com/watch?v=P9DpzPvLo4o&t=356s', videoId: 'P9DpzPvLo4o' },
-      { url: 'https://www.youtube.com/watch?v=-toE8D34FDk&t=705s', videoId: '-toE8D34FDk' },
-      { url: 'https://www.youtube.com/watch?v=nejYlXEB4xk&t=131s', videoId: 'nejYlXEB4xk' },
-    ],
+    youtubeVideos: SOCIAL_PROOF_VIDEOS,
     ctaLabel: 'Tapti nariu',
     ctaUrl: 'https://example.com/checkout/crypto-lietuva',
     secondaryCtaLabel: 'Užduok klausimą',
@@ -90,6 +89,7 @@ const PRODUCTS: Record<string, Product> = {
         ],
       },
     ],
+    youtubeVideos: SOCIAL_PROOF_VIDEOS,
     ctaLabel: 'Įsigyti',
     ctaUrl: 'https://www.launchpass.com/skenuoklt/skenuok-lt',
     secondaryCtaLabel: 'Užduok klausimą',
@@ -113,6 +113,7 @@ const PRODUCTS: Record<string, Product> = {
         ],
       },
     ],
+    youtubeVideos: SOCIAL_PROOF_VIDEOS,
     ctaLabel: 'Įsigyti',
     ctaUrl: 'https://example.com/checkout/indikatorius',
     secondaryCtaLabel: 'Užduok klausimą',
@@ -161,7 +162,5 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     );
   }
 
-  const productWithVideos = { ...product, youtubeVideos: videosWithTitles };
-
-  return <ProductPageClient product={productWithVideos} />;
+  return <ProductPageClient product={{ ...product, youtubeVideos: videosWithTitles }} />;
 }

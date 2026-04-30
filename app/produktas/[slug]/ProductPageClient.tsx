@@ -16,23 +16,16 @@ type Product = {
   position: 'left' | 'center' | 'right';
 };
 
-// CSS object-position to pan the zoomed hero poster to show each car
-const POSITION_MAP = {
-  desktop: {
-    left:   '15% 70%',
-    center: '35% 70%',
-    right:  '85% 70%',
-  },
-  mobile: {
-    left:   '15% 65%',
-    center: '50% 65%',
-    right:  '85% 65%',
-  },
+const CROP_DESKTOP = {
+  left:   { size: '300%', position: '8% 70%'  },
+  center: { size: '280%', position: '50% 70%' },
+  right:  { size: '300%', position: '92% 70%' },
 };
 
-const ZOOM_SCALE = {
-  desktop: 2.2,
-  mobile:  1.6,
+const CROP_MOBILE = {
+  left:   { size: '180%', position: '15% 70%' },
+  center: { size: '170%', position: '50% 70%' },
+  right:  { size: '180%', position: '85% 70%' },
 };
 
 export default function ProductPageClient({ product }: { product: Product }) {
@@ -51,31 +44,22 @@ export default function ProductPageClient({ product }: { product: Product }) {
     return () => clearTimeout(t);
   }, []);
 
-  const objectPosition = isMobile
-    ? POSITION_MAP.mobile[product.position]
-    : POSITION_MAP.desktop[product.position];
-  const scale = isMobile ? ZOOM_SCALE.mobile : ZOOM_SCALE.desktop;
-
-  // Aventador is on the right of the hero — put text on left for balance
-  const textOnLeft = !isMobile && product.position === 'right';
-
+  const crop = isMobile ? CROP_MOBILE[product.position] : CROP_DESKTOP[product.position];
   const posterSrc = isMobile ? '/web_hero_mobile_poster.jpg' : '/web_hero_poster.jpg';
+
+  const textOnLeft = !isMobile && product.position === 'right';
 
   return (
     <main className="relative w-screen h-[100dvh] overflow-hidden bg-black">
-      {/* Hero poster zoomed + panned to show selected car */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={posterSrc}
-        alt=""
-        aria-hidden="true"
-        draggable={false}
-        className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out"
+      {/* Hero poster cropped via background-image to show only the selected car */}
+      <div
+        className="absolute inset-0 transition-all duration-1000 ease-out"
         style={{
-          objectPosition,
-          transform: animatedIn ? `scale(${scale})` : `scale(${scale * 0.95})`,
-          transformOrigin: objectPosition,
+          backgroundImage: `url(${posterSrc})`,
+          backgroundSize: crop.size,
+          backgroundPosition: crop.position,
           opacity: animatedIn ? 1 : 0,
+          transform: animatedIn ? 'scale(1)' : 'scale(0.97)',
           zIndex: 0,
         }}
       />
@@ -93,7 +77,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
         }}
       />
 
-      <RainOverlay />
+      <RainOverlay posterUrl={posterSrc} />
 
       {/* Product info panel */}
       <div

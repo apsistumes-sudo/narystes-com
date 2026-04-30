@@ -84,7 +84,7 @@ function YoutubeListDesktop({ videos }: { videos: readonly YoutubeVideo[] }) {
         >
           {/* 160×90 thumbnail */}
           <div
-            className="relative flex-shrink-0 w-40 rounded-lg overflow-hidden"
+            className="relative flex-shrink-0 w-40 rounded-lg overflow-hidden bg-black"
             style={{ aspectRatio: '16/9' }}
           >
             <img
@@ -285,21 +285,21 @@ export default function ProductPageClient({ product }: { product: Product }) {
           />
         )}
 
-        {/* Gradient: dark on both screen edges, readable over columns, lighter in center */}
+        {/* Gradient: darker over column areas, lighter in the car-video center */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(to right, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.62) 22%, rgba(0,0,0,0.28) 50%, rgba(0,0,0,0.62) 78%, rgba(0,0,0,0.85) 100%)',
+            background: 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.72) 25%, rgba(0,0,0,0.22) 50%, rgba(0,0,0,0.72) 75%, rgba(0,0,0,0.88) 100%)',
             zIndex: 2,
           }}
         />
 
         {/* Centered two-column overlay */}
-        <div className="absolute inset-0 z-10 overflow-hidden">
-          <div className="h-full max-w-7xl mx-auto px-8 lg:px-14 grid grid-cols-2 gap-14">
+        <div className="absolute inset-0 z-10 flex items-center justify-center">
+          <div className="w-full max-w-[1280px] mx-auto px-10 flex items-start gap-14">
 
             {/* LEFT — "Pamatyk mus veikiant" + vertical video list */}
-            <div className="flex flex-col justify-center py-14 overflow-y-auto">
+            <div className="flex-1 flex flex-col max-h-[84dvh] overflow-y-auto py-14">
               {hasVideos && product.youtubeVideos ? (
                 <>
                   <h2 className="text-white font-bold text-2xl mb-2">Pamatyk mus veikiant</h2>
@@ -309,13 +309,12 @@ export default function ProductPageClient({ product }: { product: Product }) {
                   <YoutubeListDesktop videos={product.youtubeVideos} />
                 </>
               ) : (
-                /* No videos: left column stays empty (car video visible through) */
                 <div />
               )}
             </div>
 
             {/* RIGHT — membership info + CTAs */}
-            <div className="flex flex-col justify-center py-14 overflow-y-auto">
+            <div className="flex-1 flex flex-col max-h-[84dvh] overflow-y-auto py-14">
               <div className="text-xs uppercase tracking-[0.3em] text-white/70 mb-3">
                 {product.subtitle}
               </div>

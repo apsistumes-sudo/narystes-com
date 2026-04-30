@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 
 const RainEffect = dynamic(() => import('@/lib/rain/RainEffect'), { ssr: false });
 
-export default function RainOverlay({ active }: { active: boolean }) {
+export default function RainOverlay({ active, posterUrl }: { active: boolean; posterUrl: string }) {
   return (
     <div
       className="pointer-events-none absolute inset-0 transition-opacity duration-700"
@@ -11,7 +11,7 @@ export default function RainOverlay({ active }: { active: boolean }) {
     >
       <RainEffect
         type="rain"
-        backgroundImageUrl="/web_hero_poster.jpg"
+        backgroundImageUrl={posterUrl}
       />
     </div>
   );

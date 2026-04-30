@@ -50,3 +50,4 @@ next-env.d.ts
 
 # Large source video copy in public/
 public/web_source.mp4
+.vercel

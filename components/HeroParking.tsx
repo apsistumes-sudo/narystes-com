@@ -14,11 +14,11 @@ const CARS_DESKTOP = [
   { id: 'aventador', href: '/produktas/aventador', left: '67%', top: '38%', width: '28%', height: '42%' },
 ];
 
-// Mobile: 9:16 video, cars in lower portion of the vertical frame
+// Mobile: 9:16 video, cars closer to camera in new v2 source
 const CARS_MOBILE = [
-  { id: 'divo',      href: '/produktas/divo',      left: '2%',  top: '60%', width: '30%', height: '22%' },
-  { id: 'urus',      href: '/produktas/urus',      left: '32%', top: '54%', width: '36%', height: '28%' },
-  { id: 'aventador', href: '/produktas/aventador', left: '68%', top: '60%', width: '30%', height: '22%' },
+  { id: 'divo',      href: '/produktas/divo',      left: '0%',  top: '52%', width: '36%', height: '36%' },
+  { id: 'urus',      href: '/produktas/urus',      left: '34%', top: '40%', width: '32%', height: '40%' },
+  { id: 'aventador', href: '/produktas/aventador', left: '64%', top: '52%', width: '36%', height: '36%' },
 ];
 
 export default function HeroParking() {
@@ -38,9 +38,9 @@ export default function HeroParking() {
     const el = videoRef.current;
     if (!el) return;
 
-    // Cars stop moving at ~1.67s (3s approach / 1.8x speed).
-    // Fire at 1.6s so the flash overlaps the final stopping motion.
-    const STOP_TIME = 1.6;
+    // Desktop approach ends ~1.67s (3s / 1.8x). Mobile approach ends ~1.04s (2.5s / 2.4x).
+    // Fire just before approach ends so flash overlaps the final stopping motion.
+    const STOP_TIME = isMobile ? 1.0 : 1.6;
 
     const onTime  = () => { if (el.currentTime >= STOP_TIME && !carsStopped) setCarsStopped(true); };
     const onEnded = () => setCarsStopped(true);
@@ -50,7 +50,7 @@ export default function HeroParking() {
       el.removeEventListener('timeupdate', onTime);
       el.removeEventListener('ended', onEnded);
     };
-  }, [carsStopped]);
+  }, [carsStopped, isMobile]);
 
   const cars      = isMobile ? CARS_MOBILE : CARS_DESKTOP;
   const videoSrc  = isMobile ? `/web_hero_mobile.mp4?v=${v}`        : `/web_hero.mp4?v=${v}`;
@@ -84,7 +84,7 @@ export default function HeroParking() {
         />
       )}
 
-      <RainOverlay active={carsStopped} />
+      <RainOverlay active={carsStopped} posterUrl={posterSrc} />
 
       {cars.map(car => (
         <Link
@@ -99,7 +99,6 @@ export default function HeroParking() {
       ))}
 
       <LightningText active={carsStopped} text="Rinkitės narystę" mobile={isMobile} />
-
     </section>
   );
 }

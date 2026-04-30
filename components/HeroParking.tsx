@@ -108,7 +108,7 @@ export default function HeroParking() {
           key={car.id}
           href={car.href}
           aria-label={`Pasirinkti: ${car.id}`}
-          className={`absolute block ${carsStopped ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'} focus-visible:outline-none transition-all duration-300 ease-out md:hover:[filter:drop-shadow(0_0_24px_rgba(255,255,255,0.35))_drop-shadow(0_0_48px_rgba(255,255,255,0.2))] active:scale-[0.97] active:[filter:brightness(1.15)]`}
+          className={`absolute block rounded-lg ${carsStopped ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'} focus-visible:outline-none transition-all duration-300 ease-out md:hover:shadow-[0_0_40px_12px_rgba(255,255,255,0.22),0_0_80px_24px_rgba(255,255,255,0.10)] active:scale-[0.97] active:brightness-125`}
           style={{ left: car.left, top: car.top, width: car.width, height: car.height, zIndex: 20 }}
         />
       ))}

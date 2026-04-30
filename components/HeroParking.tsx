@@ -37,14 +37,11 @@ export default function HeroParking() {
     const el = videoRef.current;
     if (!el) return;
 
-    // Fire 80ms before the video ends so the flash overlaps the final frame
-    const FLASH_LEAD_MS = 80;
+    // Cars stop moving at ~1.67s (3s approach / 1.8x speed).
+    // Fire at 1.6s so the flash overlaps the final stopping motion.
+    const STOP_TIME = 1.6;
 
-    const onTime  = () => {
-      if (carsStopped) return;
-      const remaining = (el.duration - el.currentTime) * 1000;
-      if (remaining <= FLASH_LEAD_MS) setCarsStopped(true);
-    };
+    const onTime  = () => { if (el.currentTime >= STOP_TIME && !carsStopped) setCarsStopped(true); };
     const onEnded = () => setCarsStopped(true);
     el.addEventListener('timeupdate', onTime);
     el.addEventListener('ended', onEnded);

@@ -334,7 +334,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
                 href={product.susisiektiUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-pulse-glow block w-full text-center border-2 border-[#ff2d3f] bg-transparent text-white font-semibold text-xl px-14 py-4 rounded-full hover:scale-105 active:scale-[0.97] transition-all duration-300 mt-8"
+                className="btn-pulse-glow block w-full text-center border-2 border-[#ff2d3f] bg-transparent text-white font-semibold text-xl px-14 py-4 rounded-full hover:shadow-[0_0_30px_rgba(239,68,68,0.8)] hover:scale-[1.02] active:scale-[0.97] transition-all duration-300 mt-8"
               >
                 Susisiekti
               </a>

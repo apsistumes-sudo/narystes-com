@@ -307,8 +307,8 @@ export default function ProductPageClient({ product }: { product: Product }) {
             <div className="flex-1 flex flex-col max-h-[84dvh] overflow-y-auto py-14">
               {hasVideos && product.youtubeVideos ? (
                 <>
-                  <h2 className="text-white font-bold text-2xl lg:text-3xl mb-2">Pamatyk mus veikiant</h2>
-                  <p className="text-white/55 text-sm lg:text-base mb-6">
+                  <h2 className="text-white font-bold text-2xl lg:text-4xl mb-2">Pamatyk mus veikiant</h2>
+                  <p className="text-white/55 text-sm lg:text-lg mb-6">
                     Keletas mūsų pasirodymų ir interviu YouTube:
                   </p>
                   <YoutubeListDesktop videos={product.youtubeVideos} />
@@ -334,7 +334,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
                 href={product.susisiektiUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-pulse-glow block w-fit text-center border-2 border-[#ff2d3f] bg-transparent text-white font-semibold text-xl px-14 py-4 rounded-full hover:scale-105 active:scale-[0.97] transition-all duration-300 mt-8"
+                className="btn-pulse-glow block w-full text-center border-2 border-[#ff2d3f] bg-transparent text-white font-semibold text-xl px-14 py-4 rounded-full hover:scale-105 active:scale-[0.97] transition-all duration-300 mt-8"
               >
                 Susisiekti
               </a>

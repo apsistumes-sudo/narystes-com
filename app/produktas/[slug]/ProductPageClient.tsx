@@ -27,7 +27,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  const desktopScale = product.id === 'divo' ? 1 : 0.85;
+  const desktopScale = product.id === 'divo' ? 1 : 0.92;
 
   const v = ASSET_VERSION;
   const desktopVideoSrc = `/products/${product.id}.mp4?v=${v}`;

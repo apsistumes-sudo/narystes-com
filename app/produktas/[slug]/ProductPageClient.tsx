@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import Link from 'next/link';
 import { ASSET_VERSION } from '@/lib/asset-version';
 import SeamlessVideo from '@/components/SeamlessVideo';
@@ -180,7 +180,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
   const [isMobile, setIsMobile] = useState(false);
   const [desktopVideoExists, setDesktopVideoExists] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
     window.addEventListener('resize', check);
@@ -208,7 +208,15 @@ export default function ProductPageClient({ product }: { product: Product }) {
         {backLink}
         <main className="w-screen bg-black">
           <div className="relative h-52 overflow-hidden">
-            <SeamlessVideo src={mobileVideoSrc} poster={posterSrc} style={{ zIndex: 0 }} />
+            {/* Poster sits behind the video — visible immediately and as fallback if video is dark */}
+            <img
+              src={posterSrc}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ zIndex: 0 }}
+            />
+            <SeamlessVideo src={mobileVideoSrc} poster={posterSrc} style={{ zIndex: 1 }} />
             <div
               className="absolute inset-0 pointer-events-none"
               style={{

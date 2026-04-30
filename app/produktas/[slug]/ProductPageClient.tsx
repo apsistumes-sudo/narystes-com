@@ -27,6 +27,8 @@ export default function ProductPageClient({ product }: { product: Product }) {
     return () => window.removeEventListener('resize', check);
   }, []);
 
+  const desktopScale = product.id === 'divo' ? 1 : 0.85;
+
   const v = ASSET_VERSION;
   const desktopVideoSrc = `/products/${product.id}.mp4?v=${v}`;
   const mobileVideoSrc  = `/products/${product.id}_mobile.mp4?v=${v}`;
@@ -56,7 +58,11 @@ export default function ProductPageClient({ product }: { product: Product }) {
         <SeamlessVideo
           src={desktopVideoSrc}
           poster={posterSrc}
-          style={{ zIndex: 0 }}
+          style={{
+            zIndex: 0,
+            transform: `scale(${desktopScale})`,
+            transformOrigin: 'center center',
+          }}
         />
       )}
 

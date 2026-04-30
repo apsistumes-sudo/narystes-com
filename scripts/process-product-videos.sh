@@ -31,10 +31,10 @@ fi
 
 # === DESKTOP versions (horizontal 16:9) ===
 
-# Bugatti desktop — zoom in 1.66x (car was too small in original)
+# Bugatti desktop — no crop, natural framing
 if [ -f bugati_web.mp4 ]; then
   ffmpeg -y -i bugati_web.mp4 \
-    -vf "crop=1152:648:384:216,scale=1920:1080:flags=lanczos" \
+    -vf "scale=1920:1080:flags=lanczos" \
     -c:v libx264 -preset slow -crf 20 -maxrate 6M -bufsize 12M \
     -an -movflags +faststart \
     public/products/divo.mp4

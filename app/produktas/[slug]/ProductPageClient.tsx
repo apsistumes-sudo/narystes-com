@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ASSET_VERSION } from '@/lib/asset-version';
 import SeamlessVideo from '@/components/SeamlessVideo';
@@ -167,6 +167,9 @@ function YoutubeGridMobile({ videos }: { videos: readonly YoutubeVideo[] }) {
   );
 }
 
+// Must match the timestamp used for ffmpeg poster extraction.
+const MOBILE_HERO_START_OFFSET = 1.0;
+
 const backLink = (
   <Link
     href="/"
@@ -203,7 +206,41 @@ export default function ProductPageClient({ product }: { product: Product }) {
   }, [isMobile, desktopVideoSrc]);
 
   const hasVideos = (product.youtubeVideos?.length ?? 0) > 0;
-  const MOBILE_HERO_START_OFFSET = 0.5; // seconds — skip bad initial frames on mobile hero
+
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const [mobileVideoReady, setMobileVideoReady] = useState(false);
+
+  useEffect(() => {
+    setMobileVideoReady(false);
+    if (!isMobile) return;
+    const v = mobileVideoRef.current;
+    if (!v) return;
+
+    const onMeta = () => { v.currentTime = MOBILE_HERO_START_OFFSET; };
+    const onSeeked = () => {
+      if (v.currentTime >= MOBILE_HERO_START_OFFSET) {
+        v.play().catch(() => {});
+        setMobileVideoReady(true);
+      }
+    };
+    const onGuard = () => {
+      if (v.currentTime < MOBILE_HERO_START_OFFSET) v.currentTime = MOBILE_HERO_START_OFFSET;
+    };
+
+    if (v.readyState >= 1) {
+      onMeta();
+    } else {
+      v.addEventListener('loadedmetadata', onMeta);
+    }
+    v.addEventListener('seeked', onSeeked);
+    v.addEventListener('timeupdate', onGuard);
+
+    return () => {
+      v.removeEventListener('loadedmetadata', onMeta);
+      v.removeEventListener('seeked', onSeeked);
+      v.removeEventListener('timeupdate', onGuard);
+    };
+  }, [isMobile, mobileVideoSrc]);
 
   // ── MOBILE (<768px) ─────────────────────────────────────────────────────────
   if (isMobile) {
@@ -220,11 +257,20 @@ export default function ProductPageClient({ product }: { product: Product }) {
               className="absolute inset-0 w-full h-full object-cover"
               style={{ zIndex: 0, ...(product.id === 'aventador' && { objectPosition: 'center 75%' }) }}
             />
-            <SeamlessVideo
+            <video
+              ref={mobileVideoRef}
               src={mobileVideoSrc}
               poster={mobilePosterSrc}
-              startOffset={MOBILE_HERO_START_OFFSET}
-              style={{ zIndex: 1, ...(product.id === 'aventador' && { objectPosition: 'center 75%' }) }}
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{
+                zIndex: 1,
+                opacity: mobileVideoReady ? 1 : 0,
+                transition: 'opacity 600ms ease-in-out',
+                ...(product.id === 'aventador' && { objectPosition: 'center 75%' }),
+              }}
             />
             <div
               className="absolute inset-0 pointer-events-none"

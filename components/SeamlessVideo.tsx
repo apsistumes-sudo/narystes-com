@@ -7,6 +7,7 @@ type Props = {
   className?: string;
   style?: React.CSSProperties;
   startOffset?: number; // kept for API compatibility, unused with pre-rendered ping-pong
+  nativeLoop?: boolean; // skip timeupdate workaround — use for xfade-seamless files
 };
 
 /**
@@ -14,10 +15,11 @@ type Props = {
  * `loop` handles desktop. `timeupdate` + `ended` override the iOS Safari loop
  * gap by jumping to 0 just before the natural end — zero per-frame cost.
  */
-export default function SeamlessVideo({ src, poster, className, style }: Props) {
+export default function SeamlessVideo({ src, poster, className, style, nativeLoop = false }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    if (nativeLoop) return; // file handles seamless loop natively — no JS needed
     const v = videoRef.current;
     if (!v) return;
 
@@ -34,7 +36,7 @@ export default function SeamlessVideo({ src, poster, className, style }: Props) 
       v.removeEventListener('timeupdate', onTimeUpdate);
       v.removeEventListener('ended', restart);
     };
-  }, [src]);
+  }, [src, nativeLoop]);
 
   return (
     <video

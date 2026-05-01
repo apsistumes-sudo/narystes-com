@@ -214,6 +214,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
             <SeamlessVideo
               src={mobileVideoSrc}
               poster={mobilePosterSrc}
+              nativeLoop={product.id === 'urus'}
               style={{
                 zIndex: 1,
                 ...(product.id === 'aventador' && { objectPosition: 'center 75%' }),

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import Link from 'next/link';
 import { ASSET_VERSION } from '@/lib/asset-version';
 import SeamlessVideo from '@/components/SeamlessVideo';
@@ -167,9 +167,6 @@ function YoutubeGridMobile({ videos }: { videos: readonly YoutubeVideo[] }) {
   );
 }
 
-// Must match the timestamp used for ffmpeg poster extraction.
-const MOBILE_HERO_START_OFFSET = 1.0;
-
 const backLink = (
   <Link
     href="/"
@@ -183,7 +180,6 @@ const backLink = (
 
 export default function ProductPageClient({ product }: { product: Product }) {
   const [isMobile, setIsMobile] = useState(false);
-  const [desktopVideoExists, setDesktopVideoExists] = useState(false);
 
   useLayoutEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -193,17 +189,10 @@ export default function ProductPageClient({ product }: { product: Product }) {
   }, []);
 
   const v = ASSET_VERSION;
-  const desktopVideoSrc  = `/products/${product.id}.mp4?v=${v}`;
-  const mobileVideoSrc   = `/products/${product.id}_mobile.mp4?v=${v}`;
-  const posterSrc        = `/products/${product.id}_poster.jpg?v=${v}`;
-  const mobilePosterSrc  = `/products/${product.id}_mobile_poster.jpg?v=${v}`;
-
-  useEffect(() => {
-    if (isMobile) return;
-    fetch(desktopVideoSrc, { method: 'HEAD' })
-      .then(r => setDesktopVideoExists(r.ok))
-      .catch(() => setDesktopVideoExists(false));
-  }, [isMobile, desktopVideoSrc]);
+  const desktopVideoSrc = `/products/${product.id}.mp4?v=${v}`;
+  const mobileVideoSrc  = `/products/${product.id}_mobile.mp4?v=${v}`;
+  const posterSrc       = `/products/${product.id}_poster.jpg?v=${v}`;
+  const mobilePosterSrc = `/products/${product.id}_mobile_poster.jpg?v=${v}`;
 
   const hasVideos = (product.youtubeVideos?.length ?? 0) > 0;
 
@@ -225,7 +214,6 @@ export default function ProductPageClient({ product }: { product: Product }) {
             <SeamlessVideo
               src={mobileVideoSrc}
               poster={mobilePosterSrc}
-              startOffset={MOBILE_HERO_START_OFFSET}
               style={{
                 zIndex: 1,
                 ...(product.id === 'aventador' && { objectPosition: 'center 75%' }),
@@ -282,19 +270,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
       {backLink}
       <main className="relative w-screen h-[100dvh] overflow-hidden bg-black">
         {/* Car video — full bleed */}
-        {desktopVideoExists ? (
-          <SeamlessVideo src={desktopVideoSrc} poster={posterSrc} style={{ zIndex: 0 }} />
-        ) : (
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url(${posterSrc})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              zIndex: 0,
-            }}
-          />
-        )}
+        <SeamlessVideo src={desktopVideoSrc} poster={posterSrc} style={{ zIndex: 0 }} />
 
         {/* Gradient: darker over column areas, lighter in the car-video center */}
         <div

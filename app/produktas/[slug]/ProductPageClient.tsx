@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import Link from 'next/link';
 import { ASSET_VERSION } from '@/lib/asset-version';
 import SeamlessVideo from '@/components/SeamlessVideo';
@@ -207,84 +207,6 @@ export default function ProductPageClient({ product }: { product: Product }) {
 
   const hasVideos = (product.youtubeVideos?.length ?? 0) > 0;
 
-  const mobileVideoARef = useRef<HTMLVideoElement>(null);
-  const mobileVideoBRef = useRef<HTMLVideoElement>(null);
-  const [mobileShowB, setMobileShowB] = useState(false);
-  const mobileShowBRef = useRef(false);
-  const [mobileReady, setMobileReady] = useState(false);
-  const mobileReadyRef = useRef(false);
-
-  useEffect(() => {
-    mobileShowBRef.current = false;
-    setMobileShowB(false);
-    mobileReadyRef.current = false;
-    setMobileReady(false);
-    if (!isMobile) return;
-    const a = mobileVideoARef.current;
-    const b = mobileVideoBRef.current;
-    if (!a || !b) return;
-
-    const FADE_S = 0.6;
-    const offset = MOBILE_HERO_START_OFFSET;
-    let rafId: number;
-    let swapping = false;
-
-    const onMetaA = () => { if (a.currentTime < offset) a.currentTime = offset; };
-    const onMetaB = () => { if (b.currentTime < offset) b.currentTime = offset; };
-    const onTimeA = () => { if (a.currentTime < offset) a.currentTime = offset; };
-    const onTimeB = () => { if (b.currentTime < offset) b.currentTime = offset; };
-    const onSeekedA = () => {
-      if (!mobileReadyRef.current && a.currentTime >= offset) {
-        a.play().catch(() => {});
-        mobileReadyRef.current = true;
-        setMobileReady(true);
-      }
-    };
-
-    const swap = (activeIsA: boolean) => {
-      if (swapping) return;
-      swapping = true;
-      const incoming = activeIsA ? b : a;
-      const outgoing = activeIsA ? a : b;
-      incoming.currentTime = offset;
-      incoming.play().catch(() => {});
-      const next = !mobileShowBRef.current;
-      mobileShowBRef.current = next;
-      setMobileShowB(next);
-      setTimeout(() => {
-        outgoing.pause();
-        outgoing.currentTime = offset;
-        swapping = false;
-      }, FADE_S * 1000 + 150);
-    };
-
-    const tick = () => {
-      const activeIsA = !mobileShowBRef.current;
-      const active = activeIsA ? a : b;
-      if (!swapping && active.duration > 0 && active.currentTime >= active.duration - FADE_S) {
-        swap(activeIsA);
-      }
-      rafId = requestAnimationFrame(tick);
-    };
-
-    a.addEventListener('loadedmetadata', onMetaA);
-    b.addEventListener('loadedmetadata', onMetaB);
-    a.addEventListener('timeupdate', onTimeA);
-    b.addEventListener('timeupdate', onTimeB);
-    a.addEventListener('seeked', onSeekedA);
-    if (a.readyState >= 1) onMetaA();
-    rafId = requestAnimationFrame(tick);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      a.removeEventListener('loadedmetadata', onMetaA);
-      b.removeEventListener('loadedmetadata', onMetaB);
-      a.removeEventListener('timeupdate', onTimeA);
-      b.removeEventListener('timeupdate', onTimeB);
-      a.removeEventListener('seeked', onSeekedA);
-    };
-  }, [isMobile, mobileVideoSrc]);
-
   // ── MOBILE (<768px) ─────────────────────────────────────────────────────────
   if (isMobile) {
     return (
@@ -300,32 +222,12 @@ export default function ProductPageClient({ product }: { product: Product }) {
               className="absolute inset-0 w-full h-full object-cover"
               style={{ zIndex: 0, ...(product.id === 'aventador' && { objectPosition: 'center 75%' }) }}
             />
-            <video
-              ref={mobileVideoARef}
+            <SeamlessVideo
               src={mobileVideoSrc}
               poster={mobilePosterSrc}
-              muted
-              playsInline
-              preload="auto"
-              className="absolute inset-0 w-full h-full object-cover"
+              startOffset={MOBILE_HERO_START_OFFSET}
               style={{
                 zIndex: 1,
-                opacity: mobileReady && !mobileShowB ? 1 : 0,
-                transition: 'opacity 600ms ease-in-out',
-                ...(product.id === 'aventador' && { objectPosition: 'center 75%' }),
-              }}
-            />
-            <video
-              ref={mobileVideoBRef}
-              src={mobileVideoSrc}
-              muted
-              playsInline
-              preload="auto"
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{
-                zIndex: 1,
-                opacity: mobileReady && mobileShowB ? 1 : 0,
-                transition: 'opacity 600ms ease-in-out',
                 ...(product.id === 'aventador' && { objectPosition: 'center 75%' }),
               }}
             />

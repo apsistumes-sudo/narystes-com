@@ -9,113 +9,98 @@ type Props = {
   startOffset?: number;
 };
 
-// Seconds before end of active video to start the crossfade.
-const FADE_S = 0.6;
+// How far before each end/start to flip direction (RAF timing buffer)
+const TURN_AHEAD = 0.1;
 
 /**
- * Smooth infinite video loop: two video elements alternate.
- * When the active video is FADE_S seconds from its end, the idle
- * video is rewound to 0, played, and faded in while the active
- * video fades out. No loop attribute — no browser-level hard cut.
+ * Ping-pong video loop: plays forward to near-end, then manually drives
+ * currentTime backward to near-start, then forward again. No restart,
+ * no crossfade — motion is always continuous.
  */
 export default function SeamlessVideo({ src, poster, className, style, startOffset = 0 }: Props) {
-  const videoARef = useRef<HTMLVideoElement>(null);
-  const videoBRef = useRef<HTMLVideoElement>(null);
-  const [showB, setShowB] = useState(false);
-  // Mirror of showB accessible inside the RAF closure without stale closure issues.
-  const showBRef = useRef(false);
-  // Hidden until first seek completes so frame 0 never flashes on load.
-  const [isReady, setIsReady] = useState(startOffset <= 0);
-  const isReadyRef = useRef(startOffset <= 0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const dirRef = useRef(1);            // 1 = forward, -1 = reverse
+  const lastTsRef = useRef<number | null>(null);
+  const rafRef = useRef(0);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const a = videoARef.current;
-    const b = videoBRef.current;
-    if (!a || !b) return;
+    const v = videoRef.current;
+    if (!v) return;
 
-    let rafId: number;
-    let swapping = false;
+    dirRef.current = 1;
+    lastTsRef.current = null;
+    setIsReady(false);
 
-    const onMetaA = () => { if (a.currentTime < startOffset) a.currentTime = startOffset; };
-    const onMetaB = () => { if (b.currentTime < startOffset) b.currentTime = startOffset; };
-    const onTimeA = () => { if (a.currentTime < startOffset) a.currentTime = startOffset; };
-    const onTimeB = () => { if (b.currentTime < startOffset) b.currentTime = startOffset; };
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      v.currentTime = startOffset;
+      v.play().catch(() => {});
+    };
 
-    const onSeekedA = () => {
-      if (!isReadyRef.current && a.currentTime >= startOffset) {
-        isReadyRef.current = true;
-        setIsReady(true);
+    const onMeta    = () => start();
+    const onPlaying = () => setIsReady(true);
+    // Safety net: if native playback reaches end before RAF catches it
+    const onEnded   = () => { dirRef.current = -1; };
+
+    v.addEventListener('loadedmetadata', onMeta);
+    v.addEventListener('playing', onPlaying);
+    v.addEventListener('ended', onEnded);
+    if (v.readyState >= 1) start();
+
+    const tick = (ts: number) => {
+      if (!v.duration) { rafRef.current = requestAnimationFrame(tick); return; }
+
+      if (lastTsRef.current === null) {
+        lastTsRef.current = ts;
+        rafRef.current = requestAnimationFrame(tick);
+        return;
       }
-    };
 
-    a.addEventListener('loadedmetadata', onMetaA);
-    b.addEventListener('loadedmetadata', onMetaB);
-    a.addEventListener('timeupdate', onTimeA);
-    b.addEventListener('timeupdate', onTimeB);
-    a.addEventListener('seeked', onSeekedA);
+      const delta = (ts - lastTsRef.current) / 1000;
+      lastTsRef.current = ts;
 
-    const swap = (activeIsA: boolean) => {
-      if (swapping) return;
-      swapping = true;
-
-      const incoming = activeIsA ? b : a;
-      const outgoing = activeIsA ? a : b;
-
-      incoming.currentTime = startOffset;
-      incoming.play().catch(() => {});
-
-      const next = !showBRef.current;
-      showBRef.current = next;
-      setShowB(next);
-
-      setTimeout(() => {
-        outgoing.pause();
-        outgoing.currentTime = startOffset;
-        swapping = false;
-      }, FADE_S * 1000 + 150);
-    };
-
-    const tick = () => {
-      const activeIsA = !showBRef.current;
-      const active = activeIsA ? a : b;
-      if (!swapping && active.duration > 0 && active.currentTime >= active.duration - FADE_S) {
-        swap(activeIsA);
+      if (dirRef.current === 1) {
+        if (v.currentTime >= v.duration - TURN_AHEAD) {
+          dirRef.current = -1;
+          v.pause();
+        }
+      } else {
+        const t = v.currentTime - delta;
+        if (t <= startOffset + TURN_AHEAD) {
+          dirRef.current = 1;
+          v.currentTime = startOffset;
+          v.play().catch(() => {});
+        } else {
+          v.currentTime = t;
+        }
       }
-      rafId = requestAnimationFrame(tick);
+
+      rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafId = requestAnimationFrame(tick);
+    rafRef.current = requestAnimationFrame(tick);
 
     return () => {
-      cancelAnimationFrame(rafId);
-      a.removeEventListener('loadedmetadata', onMetaA);
-      b.removeEventListener('loadedmetadata', onMetaB);
-      a.removeEventListener('timeupdate', onTimeA);
-      b.removeEventListener('timeupdate', onTimeB);
-      a.removeEventListener('seeked', onSeekedA);
+      cancelAnimationFrame(rafRef.current);
+      v.removeEventListener('loadedmetadata', onMeta);
+      v.removeEventListener('playing', onPlaying);
+      v.removeEventListener('ended', onEnded);
     };
   }, [src, startOffset]);
 
-  const base = className ?? 'absolute inset-0 w-full h-full object-cover';
-  const transition = `opacity ${FADE_S * 1000}ms ease-in-out`;
-
   return (
-    <>
-      <video
-        ref={videoARef}
-        className={base}
-        src={src}
-        poster={poster}
-        autoPlay muted playsInline preload="auto"
-        style={{ ...style, opacity: isReady && !showB ? 1 : 0, transition }}
-      />
-      <video
-        ref={videoBRef}
-        className={base}
-        src={src}
-        muted playsInline preload="auto"
-        style={{ ...style, opacity: isReady && showB ? 1 : 0, transition }}
-      />
-    </>
+    <video
+      ref={videoRef}
+      className={className ?? 'absolute inset-0 w-full h-full object-cover'}
+      src={src}
+      poster={poster}
+      muted
+      playsInline
+      preload="auto"
+      style={{ ...style, opacity: isReady ? 1 : 0, transition: 'opacity 500ms ease-in-out' }}
+    />
   );
 }

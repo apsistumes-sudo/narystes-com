@@ -9,6 +9,7 @@ type ProductSection = {
   intro?: string;
   numberedList?: readonly string[];
   bulletList?: readonly string[];
+  bulletLinks?: Record<string, string>;
   outro?: string;
 };
 
@@ -56,12 +57,31 @@ function SectionBlock({ section }: { section: ProductSection }) {
       )}
       {section.bulletList && (
         <ul className="space-y-2 mb-3">
-          {section.bulletList.map((item, i) => (
-            <li key={i} className="flex items-start gap-3 text-white/85 leading-relaxed lg:text-lg">
-              <span className="text-white/50 mt-1 shrink-0">→</span>
-              <span>{item}</span>
-            </li>
-          ))}
+          {section.bulletList.map((item, i) => {
+            const links = section.bulletLinks;
+            let content: React.ReactNode = item;
+            if (links) {
+              for (const [substr, href] of Object.entries(links)) {
+                const idx = item.indexOf(substr);
+                if (idx !== -1) {
+                  content = (
+                    <>
+                      {item.slice(0, idx)}
+                      <Link href={href} className="underline text-[#ff2d3f] hover:text-white transition-colors">{substr}</Link>
+                      {item.slice(idx + substr.length)}
+                    </>
+                  );
+                  break;
+                }
+              }
+            }
+            return (
+              <li key={i} className="flex items-start gap-3 text-white/85 leading-relaxed lg:text-lg">
+                <span className="text-white/50 mt-1 shrink-0">→</span>
+                <span>{content}</span>
+              </li>
+            );
+          })}
         </ul>
       )}
       {section.outro && (

@@ -6,6 +6,7 @@ type ProductSection = {
   intro?: string;
   numberedList?: string[];
   bulletList?: string[];
+  bulletLinks?: Record<string, string>; // substring → href for inline links inside bullets
   outro?: string;
 };
 
@@ -57,6 +58,9 @@ const PRODUCTS: Record<string, Product> = {
           'Daugiau nei 1000 teigiamų atsiliepimų Instagramo highlights.',
           'Dalyvaujame kiekvienoje didelėje crypto konferencijoje — plečiame žinias.',
           'Komandą sudaro 8 žmonės.',
+          'Nepasiekus pelno per 2 mėnesius — pinigų grąžinimo garantija.',
+          'Per mėnesį negavus 10 naujų signalų — mėnesis dovanų.',
+          'Kainas ir kitas papildomas privilegijas sužinoti galite paspaudę mygtuką apačioje.',
         ],
       },
     ],
@@ -73,7 +77,7 @@ const PRODUCTS: Record<string, Product> = {
     subtitle: 'Premium narystė',
     price: '49€/mėn',
     tagline: 'Profesionalus kripto pozicijų skaneris.',
-    susisiektiUrl: 'https://www.launchpass.com/skenuoklt/skenuok-lt',
+    susisiektiUrl: 'https://instagram.com/skenuok.lt',
     sections: [
       {
         heading: 'Kaip veikia produktas?',
@@ -90,7 +94,7 @@ const PRODUCTS: Record<string, Product> = {
         bulletList: [
           'Įvertina pozicijos potencialą.',
           'Patikrina indikatoriaus duomenų bazėje, kaip elgėsi panašios pozicijos tame pačiame lygyje — su panašiu volume ir kitais rodikliais.',
-          'Pereina per visą mūsų sukauptą analizę.',
+          'Kainas ir kitas papildomas privilegijas sužinoti galite paspaudę mygtuką apačioje.',
         ],
       },
     ],
@@ -116,7 +120,12 @@ const PRODUCTS: Record<string, Product> = {
           'Labai lengva naudotis — be sudėtingų nustatymų.',
           'Pilnai veikia jau 3,5 metų.',
           'Su kiekviena nauja analize tobulėja.',
+          'Tinka tiek pažengusiems, tiek naujokams.',
+          'Puikiai tinka su skenuok.lt.',
+          'Mokymuose turime dvi strategijas — kaip naudojame patys, kad būtume pelningi.',
+          'Kainas ir kitas papildomas privilegijas sužinoti galite paspaudę mygtuką apačioje.',
         ],
+        bulletLinks: { 'skenuok.lt': '/produktas/urus' },
       },
     ],
     youtubeVideos: SOCIAL_PROOF_VIDEOS,

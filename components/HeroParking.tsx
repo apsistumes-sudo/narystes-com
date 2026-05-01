@@ -35,6 +35,22 @@ export default function HeroParking() {
   }, []);
 
   useEffect(() => {
+    if (!isMobile) return;
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [isMobile]);
+
+  useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
 
@@ -77,7 +93,10 @@ export default function HeroParking() {
   useEffect(() => { setVideoPlaying(false); }, [videoSrc]);
 
   return (
-    <section className="relative w-screen h-[100dvh] overflow-hidden bg-black select-none">
+    <section
+      className="relative w-screen h-[100dvh] overflow-hidden bg-black select-none"
+      style={isMobile ? { touchAction: 'none' } : undefined}
+    >
       <video
         ref={videoRef}
         key={videoSrc}

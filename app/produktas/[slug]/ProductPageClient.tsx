@@ -253,6 +253,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
               href={product.susisiektiUrl}
               target="_blank"
               rel="noopener noreferrer"
+              referrerPolicy="no-referrer"
               className="btn-pulse-glow block w-full text-center border-2 border-[#ff2d3f] bg-transparent text-white font-semibold text-lg rounded-full px-10 py-3 hover:scale-105 active:scale-[0.97] transition-all duration-300"
             >
               Susisiekti
@@ -317,6 +318,7 @@ export default function ProductPageClient({ product }: { product: Product }) {
                 href={product.susisiektiUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                referrerPolicy="no-referrer"
                 className="btn-pulse-glow block w-full text-center border-2 border-[#ff2d3f] bg-transparent text-white font-semibold text-xl px-14 py-4 rounded-full hover:scale-[1.02] active:scale-[0.97] transition-transform duration-300 mt-8"
               >
                 Susisiekti

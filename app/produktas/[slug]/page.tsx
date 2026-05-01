@@ -48,7 +48,7 @@ const PRODUCTS: Record<string, Product> = {
     price: '19€/mėn',
     tagline: 'Lietuvos didžiausia kripto bendruomenė.',
     heroHeadline: 'Didžiausia bendruomenė, virš 100 tūkstančių sekėjų per visas platformas sudėjus',
-    susisiektiUrl: 'https://www.instagram.com/crypto_lietuva/',
+    susisiektiUrl: 'https://instagram.com/crypto_lietuva',
     sections: [
       {
         heading: 'Kodėl mumis pasitiki?',
@@ -107,7 +107,7 @@ const PRODUCTS: Record<string, Product> = {
     subtitle: 'Prekybos indikatorius',
     price: '29€/mėn',
     tagline: 'Profesionalus indikatorius pozicijų atpažinimui.',
-    susisiektiUrl: 'https://www.instagram.com/indikatorius_com/',
+    susisiektiUrl: 'https://instagram.com/indikatorius_com',
     sections: [
       {
         heading: 'Kas yra Indikatorius?',
